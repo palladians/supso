@@ -3,6 +3,8 @@ import { user, verificationCode } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 const ensureUser = async ({ email }: { email: string }) => {
 	const existingUser = await db.query.user.findFirst({ where: eq(user.email, email) });
@@ -17,6 +19,11 @@ const ensureUser = async ({ email }: { email: string }) => {
 		})
 		.returning();
 	return newUser;
+};
+
+export const load: PageServerLoad = async ({ locals }) => {
+	const session = await locals.auth.validate();
+	if (session) throw redirect(302, '/projects');
 };
 
 export const actions: Actions = {

@@ -17,5 +17,5 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 	});
 	const sessionCookie = auth.createSessionCookie(session);
 	cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes as never);
-	redirect(307, '/dashboard');
+	redirect(302, '/projects');
 };
