@@ -6,12 +6,17 @@
 	import { Switch } from '$lib/components/ui/switch';
 	import { currentProjectId } from '$lib/stores/user';
 	import { PlusIcon } from 'lucide-svelte';
+	import DeleteFlagAlert from '$lib/components/alerts/delete-flag-alert.svelte';
+	import { writable } from 'svelte/store';
 
 	export let data;
 	$: currentProject = data.projects.find((project) => project.id === $currentProjectId);
+
+	export const deleteFlagAlertId = writable<string | null>(null);
 </script>
 
 <div class="flex flex-1 items-center justify-center">
+	<DeleteFlagAlert open={deleteFlagAlertId} />
 	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<div class="flex items-center justify-between">
@@ -48,8 +53,16 @@
 								{/if}
 								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-4">
-										<Button variant="link" class="p-0">Edit</Button>
-										<Button variant="link" class="p-0">Delete</Button>
+										<Button
+											href={`/projects/${$currentProjectId}/flags/${featureFlag.id}`}
+											variant="link"
+											class="p-0">Edit</Button
+										>
+										<Button
+											variant="link"
+											class="p-0"
+											on:click={() => deleteFlagAlertId.set(featureFlag.id)}>Delete</Button
+										>
 									</div>
 									<form method="POST" action="?/toggleFlag">
 										<input type="hidden" name="flagId" value={featureFlag.id} />

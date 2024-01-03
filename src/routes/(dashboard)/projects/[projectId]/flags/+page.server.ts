@@ -28,6 +28,24 @@ export const actions: Actions = {
 			})
 			.where(eq(featureFlag.id, flag.id));
 		redirect(302, `/projects/${projectId}/flags`);
+	},
+	deleteFlag: async ({ request, locals, params }) => {
+		const { projectId } = params;
+		const session = await locals.auth.validate();
+		const membership = await db.query.usersToProjects.findFirst({
+			where: and(
+				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.projectId, projectId)
+			),
+			with: { project: { with: { featureFlags: true } } }
+		});
+		if (!membership) return error(400);
+		const formData = await request.formData();
+		const flagId = formData.get('id')?.toString() ?? '';
+		await db
+			.delete(featureFlag)
+			.where(and(eq(featureFlag.id, flagId), eq(featureFlag.projectId, projectId)));
+		redirect(302, `/projects/${projectId}/flags`);
 	}
 };
 

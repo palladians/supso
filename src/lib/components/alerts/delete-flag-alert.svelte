@@ -10,13 +10,13 @@
 		<AlertDialog.Header>
 			<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
 			<AlertDialog.Description>
-				This action cannot be undone. This will permanently delete the token and all integrations
-				using this token will be invalid.
+				This action cannot be undone. This will permanently delete the feature flag. If any app
+				relies on this flag, it may get broken.
 			</AlertDialog.Description>
 		</AlertDialog.Header>
 		<AlertDialog.Footer>
 			<AlertDialog.Cancel>Cancel</AlertDialog.Cancel>
-			<form action="?/deleteToken" method="POST">
+			<form action="?/deleteFlag" method="POST">
 				<input type="hidden" name="id" value={$open} />
 				<AlertDialog.Action type="submit">Continue</AlertDialog.Action>
 			</form>
