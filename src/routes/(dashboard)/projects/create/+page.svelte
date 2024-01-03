@@ -6,7 +6,7 @@
 </script>
 
 <div class="flex flex-1 items-center justify-center">
-	<Card.Root class="max-w-[32rem] w-full">
+	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<Card.Title>Create Project</Card.Title>
 		</Card.Header>

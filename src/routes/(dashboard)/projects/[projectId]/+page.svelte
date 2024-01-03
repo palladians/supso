@@ -66,7 +66,7 @@
 						{#each data.lastFiveEvents as event}
 							<Table.Row>
 								<Table.Cell>
-									<a href={`/events/${event.id}`} class="flex gap-2 items-center">
+									<a href={`/events/${event.id}`} class="flex items-center gap-2">
 										{#if event.emoji}
 											<Badge variant="secondary" class="text-lg">{event.emoji}</Badge>
 										{/if}

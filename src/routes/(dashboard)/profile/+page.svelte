@@ -21,7 +21,7 @@
 <div class="flex flex-1 items-center justify-center">
 	<CreateTokenDialog open={createTokenDialogOpen} />
 	<DeleteTokenAlert open={deleteTokenAlertId} />
-	<Card.Root class="max-w-[32rem] w-full">
+	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<Card.Title>Profile</Card.Title>
 		</Card.Header>

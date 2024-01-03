@@ -28,7 +28,11 @@ const app = new Elysia({ prefix: '/api' })
 					const user = (
 						await db.query.accessToken.findFirst({
 							where: eq(accessToken.id, bearer),
-							with: { user: { with: { usersToProjects: { with: { project: true } } } } }
+							with: {
+								user: {
+									with: { usersToProjects: { with: { project: { with: { featureFlags: true } } } } }
+								}
+							}
 						})
 					)?.user;
 					if (!user) throw new Error('Invalid token.');
@@ -72,6 +76,15 @@ const app = new Elysia({ prefix: '/api' })
 						})
 					}
 				)
+				.get('/feature_flags/:projectId', async ({ params, projects }) => {
+					const currentProject = projects.find((project) => project.id === params.projectId);
+					if (!currentProject) throw new Error('Unauthorized');
+					const flags = currentProject.featureFlags.map((flag) => [
+						flag.name,
+						flag.enabled === 'true'
+					]);
+					return Object.fromEntries(flags);
+				})
 				.ws('/on_event', {
 					body: t.Object({
 						projectId: t.String({ minLength: 1 })

@@ -23,6 +23,6 @@ export const actions: Actions = {
 			description,
 			projectId
 		});
-		redirect(302, `/projects/${projectId}`);
+		redirect(302, `/projects/${projectId}/flags`);
 	}
 };
