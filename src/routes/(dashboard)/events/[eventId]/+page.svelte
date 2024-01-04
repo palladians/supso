@@ -25,7 +25,7 @@
 			<span class="text-muted">/</span>
 			<a class="text-muted-foreground" href={`/projects/${$currentProjectId}/events`}>Events</a>
 		</div>
-		<div class="grid grid-cols-[1fr_3fr] gap-6">
+		<div class="grid grid-cols-[1fr_3fr] items-center justify-center gap-6">
 			<p class="text-muted-foreground">ID</p>
 			<p>{data.event.id}</p>
 			<p class="text-muted-foreground">Event</p>
@@ -35,6 +35,10 @@
 			<p class="text-muted-foreground">Channel</p>
 			<div>
 				<Badge variant="secondary">#{data.event.channel}</Badge>
+			</div>
+			<p class="text-muted-foreground">Notified</p>
+			<div>
+				<Badge variant="secondary">{data.event.notify}</Badge>
 			</div>
 			<p class="text-muted-foreground">Tags</p>
 			<Highlight language={json} code={tags} />

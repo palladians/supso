@@ -18,7 +18,8 @@ export const actions: Actions = {
 				.returning();
 			await tx.insert(usersToProjects).values({
 				userId: session.user.userId,
-				projectId: createdProject.id
+				projectId: createdProject.id,
+				role: 'admin'
 			});
 			return createdProject;
 		});

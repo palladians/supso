@@ -7,6 +7,17 @@ CREATE TABLE `access_token` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
+CREATE TABLE `board` (
+	`id` text PRIMARY KEY NOT NULL,
+	`project_id` text NOT NULL,
+	`name` text NOT NULL,
+	`tag` text NOT NULL,
+	`options` text NOT NULL,
+	`created_at` text,
+	`updated_at` text,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
 CREATE TABLE `event` (
 	`id` text PRIMARY KEY NOT NULL,
 	`project_id` text NOT NULL,
@@ -15,7 +26,19 @@ CREATE TABLE `event` (
 	`content` text,
 	`emoji` text,
 	`notify` numeric DEFAULT 'false',
-	`tags` blob,
+	`tags` text,
+	`context` text,
+	`created_at` text,
+	`updated_at` text,
+	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action
+);
+--> statement-breakpoint
+CREATE TABLE `feature_flag` (
+	`id` text PRIMARY KEY NOT NULL,
+	`project_id` text NOT NULL,
+	`name` text NOT NULL,
+	`description` text,
+	`enabled` numeric DEFAULT 'false',
 	`created_at` text,
 	`updated_at` text,
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE no action

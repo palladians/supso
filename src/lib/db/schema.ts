@@ -65,7 +65,10 @@ export const usersToProjects = sqliteTable('users_to_projects', {
 		.references(() => user.id),
 	projectId: text('project_id')
 		.notNull()
-		.references(() => project.id)
+		.references(() => project.id),
+	role: text('role', { enum: ['member', 'admin'] })
+		.notNull()
+		.default('member')
 });
 
 export const accessToken = sqliteTable('access_token', {
@@ -94,8 +97,8 @@ export const event = sqliteTable('event', {
 	content: text('content'),
 	emoji: text('emoji'),
 	notify: numeric('notify').default('false'),
-	tags: blob('tags', { mode: 'json' }),
-	context: blob('context', { mode: 'json' }),
+	tags: text('tags', { mode: 'json' }),
+	context: text('context', { mode: 'json' }),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -108,8 +111,9 @@ export const board = sqliteTable('board', {
 	projectId: text('project_id')
 		.notNull()
 		.references(() => project.id),
+	name: text('name').notNull(),
 	tag: text('tag').notNull(),
-	options: blob('options', { mode: 'json' }).notNull(),
+	options: text('options', { mode: 'json' }).notNull(),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -184,6 +188,9 @@ const insertUserSchema = createInsertSchema(user);
 const selectUserSchema = createSelectSchema(user);
 const insertProjectSchema = createInsertSchema(project);
 const selectProjectSchema = createSelectSchema(project);
+const insertEventSchema = createInsertSchema(event);
+const selectEventSchema = createSelectSchema(event);
 
 export type User = z.infer<typeof insertUserSchema> & z.infer<typeof selectUserSchema>;
 export type Project = z.infer<typeof insertProjectSchema> & z.infer<typeof selectProjectSchema>;
+export type Event = z.infer<typeof insertEventSchema> & z.infer<typeof selectEventSchema>;

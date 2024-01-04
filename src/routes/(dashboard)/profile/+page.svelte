@@ -5,7 +5,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { XIcon } from 'lucide-svelte';
+	import { XIcon, PlusIcon } from 'lucide-svelte';
 	import CreateTokenDialog from '$lib/components/dialogs/create-token-dialog.svelte';
 	import DeleteTokenAlert from '$lib/components/alerts/delete-token-alert.svelte';
 	import { writable } from 'svelte/store';
@@ -41,8 +41,10 @@
 			<div class="flex flex-col gap-4">
 				<div class="flex items-center justify-between">
 					<h2 class="font-semibold">Access Tokens</h2>
-					<Button variant="secondary" on:click={() => createTokenDialogOpen.set(true)}
-						>Create Token</Button
+					<Button variant="secondary" class="gap-1" on:click={() => createTokenDialogOpen.set(true)}
+						>
+						<PlusIcon size={16} />
+						Create Token</Button
 					>
 				</div>
 				<Table.Root>

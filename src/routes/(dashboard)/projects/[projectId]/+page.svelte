@@ -21,7 +21,7 @@
 <div class="flex flex-col gap-4">
 	<div class="flex items-center justify-between">
 		<h2 class="text-lg font-semibold">Overview</h2>
-		<Button variant="secondary" class="gap-1">
+		<Button href={`/projects/${$page.params.projectId}/settings`} variant="secondary" class="gap-1">
 			<SettingsIcon size={16} />
 			<span>Project Settings</span>
 		</Button>

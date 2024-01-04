@@ -5,6 +5,8 @@ import type { Actions } from './$types';
 import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { SECRET_PLUNK_API_KEY } from '$env/static/private';
+import { PUBLIC_APP_URL } from '$env/static/public';
 
 const ensureUser = async ({ email }: { email: string }) => {
 	const existingUser = await db.query.user.findFirst({ where: eq(user.email, email) });
@@ -39,7 +41,20 @@ export const actions: Actions = {
 				expires: Date.now() + 1000 * 60 * 5
 			})
 			.returning();
-		console.log(code.id);
-		// TODO: send email
+		const emailRequest = await fetch('https://api.useplunk.com/v1/send', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${SECRET_PLUNK_API_KEY}`
+			},
+			body: JSON.stringify({
+				to: email,
+				subject: 'Sign in to Supso',
+				body: `Sign in: ${PUBLIC_APP_URL}/verify?token=${code.id}`
+			})
+		});
+		const response = (await emailRequest.json()) as { success: boolean };
+		if (!response.success) return redirect(302, '/signin?error=true');
+		return redirect(302, '/signin?success=true');
 	}
 };

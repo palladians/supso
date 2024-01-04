@@ -82,7 +82,7 @@
 			<DropdownMenu.Content>
 				<DropdownMenu.Item href="/profile">Profile</DropdownMenu.Item>
 				<DropdownMenu.Separator />
-				<form action="api/signout" method="POST" class="flex flex-1">
+				<form action="/api/signout" method="POST" class="flex flex-1">
 					<Button variant="ghost" size="sm" type="submit" class="flex-1 justify-start px-2"
 						>Sign Out</Button
 					>
