@@ -2,6 +2,13 @@
 	"name": "supso",
 	"version": "0.0.1",
 	"private": true,
+	"files": ["build"],
+	"svelte": "build/index.js",
+	"exports": {
+		".": {
+			"svelte": "./build/index.js"
+		}
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -20,7 +27,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/adapter-cloudflare": "^3.0.1",
+		"@sveltejs/adapter-node": "^2.0.2",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/better-sqlite3": "^7.6.8",
@@ -29,6 +36,7 @@
 		"@typescript-eslint/eslint-plugin": "^6.0.0",
 		"@typescript-eslint/parser": "^6.0.0",
 		"autoprefixer": "^10.4.16",
+		"dotenv": "^16.3.1",
 		"drizzle-kit": "^0.20.9",
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
