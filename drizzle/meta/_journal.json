@@ -1,19 +1,12 @@
 {
   "version": "5",
-  "dialect": "sqlite",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1704287811506,
-      "tag": "0000_huge_cable",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1704451060646,
-      "tag": "0001_large_shriek",
+      "when": 1704461845169,
+      "tag": "0000_dapper_sebastian_shaw",
       "breakpoints": true
     }
   ]

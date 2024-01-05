@@ -1,6 +1,10 @@
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import Database from 'better-sqlite3';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import Postgres from 'pg';
 import * as schema from '$lib/db/schema';
+import { SECRET_PG_URL } from '$env/static/private';
 
-export const sqlite = new Database('sqlite.db');
-export const db = drizzle(sqlite, { schema });
+export const client = new Postgres.Pool({
+	connectionString: SECRET_PG_URL
+});
+
+export const db = drizzle(client, { schema });
