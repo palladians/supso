@@ -1,15 +1,5 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import {
-	pgTable,
-	text,
-	json,
-	integer,
-	boolean,
-	bigint,
-	uuid,
-	pgEnum,
-	timestamp
-} from 'drizzle-orm/pg-core';
+import { pgTable, text, json, boolean, bigint, uuid, pgEnum, timestamp } from 'drizzle-orm/pg-core';
 import type { z } from 'zod';
 import { relations } from 'drizzle-orm';
 
