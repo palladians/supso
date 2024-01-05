@@ -86,9 +86,8 @@
 			</div>
 			<Separator />
 			<div class="flex flex-col gap-4">
-				<div class="flex items-center justify-between">
-					<h2 class="font-semibold">Danger Zone</h2>
-				</div>
+				<h2 class="font-semibold">Danger Zone</h2>
+				<Button variant="secondary">Delete Project</Button>
 			</div>
 		</Card.Content>
 	</Card.Root>
