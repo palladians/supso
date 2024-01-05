@@ -14,8 +14,7 @@
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
 		"db:generate": "drizzle-kit generate:sqlite",
-		"db:push": "drizzle-kit push:sqlite",
-		"postinstall": "bun run db:generate && bun run db:push"
+		"db:push": "drizzle-kit push:sqlite"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
