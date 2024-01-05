@@ -5,7 +5,6 @@ import { db } from '$lib/db';
 import { eq } from 'drizzle-orm';
 import { accessToken, event } from '$lib/db/schema';
 import { UAParser } from 'ua-parser-js';
-import geoip from 'geoip-country';
 
 const singleEmojiRegex =
 	/^(?:\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?\uFE0F?|\p{Emoji_Component}\uFE0F?|\u200D\p{Emoji}\uFE0F?|\u200D\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?\uFE0F?|\u200D\p{Emoji_Component}\uFE0F?)+$/u;
@@ -48,11 +47,8 @@ const app = new Elysia({ prefix: '/api' })
 						const parser = new UAParser(headers['user-agent']);
 						const userInProject = projects.find((project) => project.id === body.projectId);
 						if (!userInProject) throw new Error('Unauthorized');
-						const geo = geoip.lookup(headers?.['X-Forwarded-For'] ?? '');
-						const context = {
-							...parser.getResult(),
-							geo
-						};
+						// const geo = geoip.lookup(headers?.['X-Forwarded-For'] ?? '');
+						const context = parser.getResult();
 						return db.insert(event).values({
 							projectId: body.projectId,
 							channel: body.channel,
@@ -79,10 +75,7 @@ const app = new Elysia({ prefix: '/api' })
 				.get('/feature_flags/:projectId', async ({ params, projects }) => {
 					const currentProject = projects.find((project) => project.id === params.projectId);
 					if (!currentProject) throw new Error('Unauthorized');
-					const flags = currentProject.featureFlags.map((flag) => [
-						flag.name,
-						flag.enabled === 'true'
-					]);
+					const flags = currentProject.featureFlags.map((flag) => [flag.name, flag.enabled]);
 					return Object.fromEntries(flags);
 				})
 				.ws('/on_event', {

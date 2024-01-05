@@ -52,7 +52,7 @@
 							</Table.Cell>
 							<Table.Cell>
 								<Badge variant="secondary">
-									{#if event.notify === 'true'}
+									{#if event.notify}
 										<CheckIcon size={16} />
 									{:else}
 										<XIcon size={16} />

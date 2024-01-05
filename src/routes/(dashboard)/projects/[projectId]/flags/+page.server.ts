@@ -20,7 +20,7 @@ export const actions: Actions = {
 		const flagId = formData.get('flagId')?.toString() ?? '';
 		const flag = membership.project.featureFlags.find((flag) => flag.id === flagId);
 		if (!flag) return error(404);
-		const enabled = flag.enabled === 'true';
+		const enabled = flag.enabled;
 		await db
 			.update(featureFlag)
 			.set({
