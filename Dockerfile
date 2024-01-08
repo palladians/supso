@@ -11,4 +11,5 @@ RUN bun upgrade --canary
 
 RUN bun i
 
+CMD bun run build
 CMD bun run start
