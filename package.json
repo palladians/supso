@@ -14,8 +14,8 @@
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"db:generate": "drizzle-kit generate:pg",
-		"db:push": "drizzle-kit push:pg"
+		"db:generate": "drizzle-kit generate:sqlite",
+		"db:push": "drizzle-kit push:sqlite"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
@@ -48,12 +48,9 @@
 	"type": "module",
 	"dependencies": {
 		"@carbon/charts-svelte": "^1.13.18",
-		"@elysiajs/lucia-auth": "^0.8.0-exp.1",
-		"@elysiajs/swagger": "^0.8.0",
 		"@internationalized/date": "^3.5.1",
-		"@libsql/client": "^0.4.0-pre.7",
-		"@lucia-auth/adapter-postgresql": "^2.0.2",
-		"@vercel/postgres": "^0.5.1",
+		"@lucia-auth/adapter-sqlite": "^2.0.1",
+		"better-sqlite3": "^9.2.2",
 		"bits-ui": "^0.13.0",
 		"chart.js": "^4.4.1",
 		"clsx": "^2.1.0",
@@ -61,12 +58,9 @@
 		"date-fns": "^3.0.6",
 		"drizzle-orm": "^0.29.2",
 		"drizzle-zod": "^0.5.1",
-		"elysia": "^0.8.6",
-		"elysia-ip": "^0.0.5",
 		"formsnap": "^0.4.2",
 		"lucia": "^2.7.6",
 		"lucide-svelte": "^0.303.0",
-		"pg": "^8.11.3",
 		"rambda": "^8.6.0",
 		"svelte-dnd-action": "^0.9.38",
 		"svelte-highlight": "^7.4.7",

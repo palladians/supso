@@ -1,45 +1,46 @@
 {
-  "id": "0351270a-483f-43f7-868a-2d65361f8c62",
-  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
-  "dialect": "pg",
+  "dialect": "sqlite",
+  "id": "76398342-230d-42da-b4fb-950b1904f6da",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "access_token": {
       "name": "access_token",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -48,7 +49,6 @@
           "name": "access_token_user_id_user_id_fk",
           "tableFrom": "access_token",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -64,52 +64,55 @@
     },
     "board": {
       "name": "board",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "project_id": {
           "name": "project_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "tag": {
           "name": "tag",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "options": {
           "name": "options",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -118,7 +121,6 @@
           "name": "board_project_id_project_id_fk",
           "tableFrom": "board",
           "tableTo": "project",
-          "schemaTo": "public",
           "columnsFrom": [
             "project_id"
           ],
@@ -134,77 +136,84 @@
     },
     "event": {
       "name": "event",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "project_id": {
           "name": "project_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "channel": {
           "name": "channel",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "event": {
           "name": "event",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "content": {
           "name": "content",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "emoji": {
           "name": "emoji",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "notify": {
           "name": "notify",
-          "type": "boolean",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "autoincrement": false,
+          "default": "'false'"
         },
         "tags": {
           "name": "tags",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "context": {
           "name": "context",
-          "type": "json",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -213,7 +222,6 @@
           "name": "event_project_id_project_id_fk",
           "tableFrom": "event",
           "tableTo": "project",
-          "schemaTo": "public",
           "columnsFrom": [
             "project_id"
           ],
@@ -229,53 +237,56 @@
     },
     "feature_flag": {
       "name": "feature_flag",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "project_id": {
           "name": "project_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "description": {
           "name": "description",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "enabled": {
           "name": "enabled",
-          "type": "boolean",
+          "type": "numeric",
           "primaryKey": false,
           "notNull": false,
-          "default": false
+          "autoincrement": false,
+          "default": "'false'"
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -284,7 +295,6 @@
           "name": "feature_flag_project_id_project_id_fk",
           "tableFrom": "feature_flag",
           "tableTo": "project",
-          "schemaTo": "public",
           "columnsFrom": [
             "project_id"
           ],
@@ -300,40 +310,41 @@
     },
     "project": {
       "name": "project",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "name": {
           "name": "name",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "timestamp",
+          "type": "text",
           "primaryKey": false,
           "notNull": false,
-          "default": "now()"
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -342,7 +353,6 @@
           "name": "project_user_id_user_id_fk",
           "tableFrom": "project",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -358,80 +368,86 @@
     },
     "user": {
       "name": "user",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "username": {
           "name": "username",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "created_at": {
           "name": "created_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
+      "indexes": {
         "user_email_unique": {
           "name": "user_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "isUnique": true
         },
         "user_username_unique": {
           "name": "user_username_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "username"
-          ]
+          ],
+          "isUnique": true
         }
-      }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "user_key": {
       "name": "user_key",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "hashed_password": {
           "name": "hashed_password",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -440,7 +456,6 @@
           "name": "user_key_user_id_user_id_fk",
           "tableFrom": "user_key",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -456,31 +471,34 @@
     },
     "user_session": {
       "name": "user_session",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
           "type": "text",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "active_expires": {
           "name": "active_expires",
-          "type": "bigint",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "idle_expires": {
           "name": "idle_expires",
-          "type": "bigint",
+          "type": "blob",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -489,7 +507,6 @@
           "name": "user_session_user_id_user_id_fk",
           "tableFrom": "user_session",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -505,25 +522,27 @@
     },
     "users_to_projects": {
       "name": "users_to_projects",
-      "schema": "",
       "columns": {
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "project_id": {
           "name": "project_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         },
         "role": {
           "name": "role",
-          "type": "role",
+          "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
+          "autoincrement": false,
           "default": "'member'"
         }
       },
@@ -533,7 +552,6 @@
           "name": "users_to_projects_user_id_user_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -547,7 +565,6 @@
           "name": "users_to_projects_project_id_project_id_fk",
           "tableFrom": "users_to_projects",
           "tableTo": "project",
-          "schemaTo": "public",
           "columnsFrom": [
             "project_id"
           ],
@@ -563,26 +580,27 @@
     },
     "verification_code": {
       "name": "verification_code",
-      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "gen_random_uuid()"
+          "autoincrement": false
         },
         "expires": {
           "name": "expires",
-          "type": "bigint",
+          "type": "integer",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "autoincrement": false
         },
         "user_id": {
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -591,7 +609,6 @@
           "name": "verification_code_user_id_user_id_fk",
           "tableFrom": "verification_code",
           "tableTo": "user",
-          "schemaTo": "public",
           "columnsFrom": [
             "user_id"
           ],
@@ -606,19 +623,10 @@
       "uniqueConstraints": {}
     }
   },
-  "enums": {
-    "role": {
-      "name": "role",
-      "values": {
-        "member": "member",
-        "admin": "admin"
-      }
-    }
-  },
-  "schemas": {},
+  "enums": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
+    "tables": {},
+    "columns": {}
   }
 }

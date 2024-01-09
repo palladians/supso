@@ -1,11 +1,11 @@
 import { lucia } from 'lucia';
-import { pg } from '@lucia-auth/adapter-postgresql';
-import { client } from '$lib/db';
+import { betterSqlite3 } from '@lucia-auth/adapter-sqlite';
+import { sqlite } from '$lib/db';
 import { dev } from '$app/environment';
 import { sveltekit } from 'lucia/middleware';
 
 export const auth = lucia({
-	adapter: pg(client, {
+	adapter: betterSqlite3(sqlite, {
 		user: 'user',
 		key: 'user_key',
 		session: 'user_session'
@@ -19,5 +19,4 @@ export const auth = lucia({
 		};
 	}
 });
-
 export type Auth = typeof auth;

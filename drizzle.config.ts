@@ -4,9 +4,9 @@ import { defineConfig } from 'drizzle-kit';
 export default defineConfig({
 	schema: './src/lib/db/schema.ts',
 	out: './drizzle',
-	driver: 'pg',
+	driver: 'better-sqlite',
 	dbCredentials: {
-		connectionString: process.env.SECRET_PG_URL ?? ''
+		url: './sqlite.db'
 	},
 	verbose: true,
 	strict: true

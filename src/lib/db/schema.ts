@@ -1,9 +1,9 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { pgTable, text, json, boolean, bigint, uuid, pgEnum, timestamp } from 'drizzle-orm/pg-core';
+import { sqliteTable, text, blob, integer, numeric } from 'drizzle-orm/sqlite-core';
 import type { z } from 'zod';
 import { relations } from 'drizzle-orm';
 
-export const user = pgTable('user', {
+export const user = sqliteTable('user', {
 	id: text('id')
 		.primaryKey()
 		.notNull()
@@ -14,109 +14,123 @@ export const user = pgTable('user', {
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const userSession = pgTable('user_session', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+export const userSession = sqliteTable('user_session', {
+	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	activeExpires: bigint('active_expires', {
+	activeExpires: blob('active_expires', {
 		mode: 'bigint'
 	}).notNull(),
-	idleExpires: bigint('idle_expires', {
+	idleExpires: blob('idle_expires', {
 		mode: 'bigint'
 	}).notNull()
 });
 
-export const userKey = pgTable('user_key', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+export const userKey = sqliteTable('user_key', {
+	id: text('id').primaryKey(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
 	hashedPassword: text('hashed_password')
 });
 
-export const verificationCode = pgTable('verification_code', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
-	expires: bigint('expires', { mode: 'bigint' }),
+export const verificationCode = sqliteTable('verification_code', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	expires: integer('expires'),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id)
 });
 
-export const project = pgTable('project', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
+export const project = sqliteTable('project', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
 	name: text('name').notNull(),
 	ownerId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at').defaultNow()
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const roleEnum = pgEnum('role', ['member', 'admin']);
-
-export const usersToProjects = pgTable('users_to_projects', {
+export const usersToProjects = sqliteTable('users_to_projects', {
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	projectId: uuid('project_id')
+	projectId: text('project_id')
 		.notNull()
 		.references(() => project.id),
-	role: roleEnum('role').default('member')
+	role: text('role', { enum: ['member', 'admin'] })
+		.notNull()
+		.default('member')
 });
 
-export const accessToken = pgTable('access_token', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
+export const accessToken = sqliteTable('access_token', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
 	name: text('name').notNull(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at').defaultNow()
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const event = pgTable('event', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
-	projectId: uuid('project_id')
+export const event = sqliteTable('event', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	projectId: text('project_id')
 		.notNull()
 		.references(() => project.id),
 	channel: text('channel').notNull(),
 	event: text('event').notNull(),
 	content: text('content'),
 	emoji: text('emoji'),
-	notify: boolean('notify').default(false),
-	tags: json('tags'),
-	context: json('context'),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at').defaultNow()
+	notify: numeric('notify').default('false'),
+	tags: text('tags', { mode: 'json' }),
+	context: text('context', { mode: 'json' }),
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const board = pgTable('board', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
-	projectId: uuid('project_id')
+export const board = sqliteTable('board', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	projectId: text('project_id')
 		.notNull()
 		.references(() => project.id),
 	name: text('name').notNull(),
 	tag: text('tag').notNull(),
-	options: json('options').notNull(),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at').defaultNow()
+	options: text('options', { mode: 'json' }).notNull(),
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const featureFlag = pgTable('feature_flag', {
-	id: uuid('id').primaryKey().notNull().defaultRandom(),
-	projectId: uuid('project_id')
+export const featureFlag = sqliteTable('feature_flag', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	projectId: text('project_id')
 		.notNull()
 		.references(() => project.id),
 	name: text('name').notNull(),
 	description: text('description'),
-	enabled: boolean('enabled').default(false),
-	createdAt: timestamp('created_at').defaultNow(),
-	updatedAt: timestamp('updated_at').defaultNow()
+	enabled: numeric('enabled').default('false'),
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
 export const usersRelations = relations(user, ({ many }) => ({
@@ -174,7 +188,7 @@ const insertUserSchema = createInsertSchema(user);
 const selectUserSchema = createSelectSchema(user);
 const insertProjectSchema = createInsertSchema(project);
 const selectProjectSchema = createSelectSchema(project);
-const insertEventSchema = createInsertSchema(event);
+export const insertEventSchema = createInsertSchema(event);
 const selectEventSchema = createSelectSchema(event);
 
 export type User = z.infer<typeof insertUserSchema> & z.infer<typeof selectUserSchema>;

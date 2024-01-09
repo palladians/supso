@@ -1,12 +1,12 @@
 {
   "version": "5",
-  "dialect": "pg",
+  "dialect": "sqlite",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1704461845169,
-      "tag": "0000_dapper_sebastian_shaw",
+      "when": 1704837118999,
+      "tag": "0000_serious_boomerang",
       "breakpoints": true
     }
   ]
