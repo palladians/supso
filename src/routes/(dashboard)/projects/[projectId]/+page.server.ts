@@ -5,10 +5,8 @@ import { groupBy, take } from 'rambda';
 import { event, project } from '$lib/db/schema';
 import { error } from '@sveltejs/kit';
 import { formatDateShort } from '$lib/format/date';
-import colors from 'tailwindcss/colors';
 import { format, eachDayOfInterval } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import type { ChartData } from 'chart.js';
 
 const daysOfWeek = eachDayOfInterval({
 	start: new Date(new Date().setDate(new Date().getDate() - 6)),
@@ -16,26 +14,6 @@ const daysOfWeek = eachDayOfInterval({
 });
 
 const weekdays = daysOfWeek.map((day) => format(day, 'P', { locale: enUS }));
-
-const buildChartTemplate = ({
-	dates,
-	events
-}: {
-	dates: string[];
-	events: number[];
-}): ChartData<'bar', (number | [number, number])[], unknown> => ({
-	labels: dates,
-	datasets: [
-		{
-			label: 'Events',
-			data: events,
-			backgroundColor: [colors.cyan[500]],
-			borderWidth: 2,
-			borderColor: [colors.cyan[300]],
-			borderRadius: 8
-		}
-	]
-});
 
 const fetchEvents = async ({ params, session }: { params: RouteParams; session: any }) => {
 	const currentProject = await db.query.project.findFirst({
@@ -54,11 +32,7 @@ const fetchEvents = async ({ params, session }: { params: RouteParams; session: 
 };
 
 const buildEventsChartData = ({ eventsByDate }: { eventsByDate: Record<string, any[]> }) => {
-	const dateEvents = weekdays.map((date) => ({ date, events: eventsByDate[date]?.length ?? 0 }));
-	return buildChartTemplate({
-		dates: dateEvents.map((entry) => entry.date),
-		events: dateEvents.map((entry) => entry.events)
-	});
+	return weekdays.map((date) => ({ date, events: eventsByDate[date]?.length ?? 0 }));
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {

@@ -1,19 +1,38 @@
 <script lang="ts">
-	import { Bar } from 'svelte-chartjs';
+	import '@carbon/charts-svelte/styles.css';
+	import { BarChartSimple, ChartTheme } from '@carbon/charts-svelte';
 
-	import {
-		Chart,
-		Title,
-		Tooltip,
-		BarElement,
-		CategoryScale,
-		LinearScale,
-		type ChartData
-	} from 'chart.js';
-
-	Chart.register(Title, Tooltip, BarElement, CategoryScale, LinearScale);
-
-	export let data: ChartData<'bar', (number | [number, number])[], unknown>;
+	export let data;
 </script>
 
-<Bar {data} options={{ responsive: true }} />
+<BarChartSimple
+	{data}
+	options={{
+		theme: ChartTheme.G100,
+		height: '400px',
+		grid: {
+			x: {
+				enabled: false
+			},
+			y: {
+				enabled: false
+			}
+		},
+		legend: {
+			enabled: false
+		},
+		axes: {
+			left: { mapsTo: 'events' },
+			bottom: { mapsTo: 'date', scaleType: 'labels' }
+		},
+		color: {
+			pairing: {
+				option: 2
+			},
+			scale: {
+				Qty: '#925699',
+				Misc: '#525669'
+			}
+		}
+	}}
+/>

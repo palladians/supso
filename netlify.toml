@@ -1,6 +1,0 @@
-[build]
-  command = "bun run build"
-  publish = "build"
-
-[functions]
-  external_node_modules = ["@libsql/client"]
