@@ -4,9 +4,9 @@ import { defineConfig } from 'drizzle-kit';
 export default defineConfig({
 	schema: './src/lib/db/schema.ts',
 	out: './drizzle',
-	driver: 'better-sqlite',
+	driver: 'libsql',
 	dbCredentials: {
-		url: './sqlite.db'
+		url: 'file:sqlite.db'
 	},
 	verbose: true,
 	strict: true

@@ -49,8 +49,8 @@
 	"dependencies": {
 		"@carbon/charts-svelte": "^1.13.18",
 		"@internationalized/date": "^3.5.1",
+		"@libsql/client": "^0.3.6",
 		"@lucia-auth/adapter-sqlite": "^2.0.1",
-		"better-sqlite3": "^9.2.2",
 		"bits-ui": "^0.13.0",
 		"chart.js": "^4.4.1",
 		"clsx": "^2.1.0",
