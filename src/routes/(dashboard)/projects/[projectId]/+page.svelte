@@ -21,10 +21,16 @@
 <div class="flex flex-col gap-4">
 	<div class="flex items-center justify-between">
 		<h2 class="text-lg font-semibold">Overview</h2>
-		<Button href={`/projects/${$page.params.projectId}/settings`} variant="secondary" class="gap-1">
-			<SettingsIcon size={16} />
-			<span>Project Settings</span>
-		</Button>
+		{#if data.role === 'admin'}
+			<Button
+				href={`/projects/${$page.params.projectId}/settings`}
+				variant="secondary"
+				class="gap-1"
+			>
+				<SettingsIcon size={16} />
+				<span>Project Settings</span>
+			</Button>
+		{/if}
 	</div>
 	<div class="grid grid-cols-2 gap-4">
 		<Card.Root>

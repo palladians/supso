@@ -5,7 +5,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { XIcon, PlusIcon } from 'lucide-svelte';
+	import { XIcon, PlusIcon, CheckIcon } from 'lucide-svelte';
 	import CreateTokenDialog from '$lib/components/dialogs/create-token-dialog.svelte';
 	import DeleteTokenAlert from '$lib/components/alerts/delete-token-alert.svelte';
 	import { writable } from 'svelte/store';
@@ -39,10 +39,41 @@
 			</form>
 			<Separator />
 			<div class="flex flex-col gap-4">
+				<h2 class="font-semibold">Project Invitations</h2>
+				{#if data.projectInvitations.length === 0}
+					<p class="text-sm">No active invitations</p>
+				{/if}
+				<div class="flex flex-col gap-4">
+					{#each data.projectInvitations as invitation}
+						<Card.Root class="flex items-center gap-2 px-4 py-2">
+							<p class="flex-1">{invitation.project.name}</p>
+							<form action="?/acceptInvitation" method="POST">
+								<input type="hidden" name="id" value={invitation.id} />
+								<Button type="submit" size="sm" class="gap-2">
+									<CheckIcon size={16} />
+									<span>Accept</span>
+								</Button>
+							</form>
+							<form action="?/rejectInvitation" method="POST">
+								<input type="hidden" name="id" value={invitation.id} />
+								<Button type="submit" size="sm" variant="secondary" class="gap-2">
+									<XIcon size={16} />
+									<span>Decline</span>
+								</Button>
+							</form>
+						</Card.Root>
+					{/each}
+				</div>
+			</div>
+			<Separator />
+			<div class="flex flex-col gap-4">
 				<div class="flex items-center justify-between">
 					<h2 class="font-semibold">Access Tokens</h2>
-					<Button variant="secondary" class="gap-1" on:click={() => createTokenDialogOpen.set(true)}
-						>
+					<Button
+						variant="secondary"
+						class="gap-1"
+						on:click={() => createTokenDialogOpen.set(true)}
+					>
 						<PlusIcon size={16} />
 						Create Token</Button
 					>

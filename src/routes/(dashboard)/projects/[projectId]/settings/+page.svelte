@@ -8,6 +8,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronLeftIcon, XIcon, PlusIcon } from 'lucide-svelte';
 	import { page } from '$app/stores';
+	import { writable } from 'svelte/store';
+	import InviteMemberDialog from '$lib/components/dialogs/invite-member-dialog.svelte';
+	import RemoveMemberAlert from '$lib/components/alerts/remove-member-alert.svelte';
+	import DeleteProjectAlert from '$lib/components/alerts/delete-project-alert.svelte';
 
 	export const roles = [
 		{ value: 'member', label: 'Member' },
@@ -17,9 +21,15 @@
 	export let data;
 	$: currentOwner = data.membersOptions.find((member) => member.value === data.project.ownerId);
 	$: isOwner = data.user.userId === data.project.ownerId;
+	export const inviteMemberDialogOpen = writable<boolean>(false);
+	export const removeMemberAlertId = writable<string | null>(null);
+	export const deleteProjectAlertId = writable<string | null>(null);
 </script>
 
 <div class="flex flex-1 items-center justify-center">
+	<InviteMemberDialog open={inviteMemberDialogOpen} />
+	<RemoveMemberAlert open={removeMemberAlertId} />
+	<DeleteProjectAlert open={deleteProjectAlertId} />
 	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<div class="flex items-center gap-4">
@@ -30,13 +40,14 @@
 			</div>
 		</Card.Header>
 		<Card.Content class="flex flex-col gap-8">
-			<form class="flex flex-col gap-4">
+			<form action="?/updateProject" method="POST" class="flex flex-col gap-4">
 				<fieldset class="flex flex-col gap-2">
 					<Label for="projectName">Project Name</Label>
 					<Input id="projectName" name="name" bind:value={data.project.name} />
 				</fieldset>
 				<fieldset class="flex flex-col gap-2">
-					<Label for="ownerId">Project Owner</Label>
+					<Label>Project Owner</Label>
+					<input type="hidden" name="ownerId" value={currentOwner?.value} />
 					<Select.Root bind:selected={currentOwner} bind:items={data.membersOptions}>
 						<Select.Trigger>
 							<Select.Value placeholder="Project Owner" />
@@ -48,36 +59,58 @@
 						</Select.Content>
 					</Select.Root>
 				</fieldset>
-				<Button class="self-end">Update Project</Button>
+				<Button type="submit" class="self-end">Update Project</Button>
 			</form>
 			<Separator />
 			<div class="flex flex-col gap-4">
 				<div class="flex items-center justify-between">
 					<h2 class="font-semibold">Members</h2>
-					<Button variant="secondary" class="gap-1">
+					<Button
+						variant="secondary"
+						class="gap-1"
+						on:click={() => inviteMemberDialogOpen.set(true)}
+					>
 						<PlusIcon size={16} />
 						Invite Member
 					</Button>
 				</div>
-				{#each data.members as membership}
+				{#each data.members as membership, i}
 					{@const role = { value: membership.role, label: membership.role }}
 					<Card.Root class="flex items-center gap-4 px-4 py-2">
-						<Avatar.Root>
+						<Avatar.Root class="h-8 w-8">
 							<Avatar.Fallback class="capitalize">{membership.user.username[0]}</Avatar.Fallback>
 						</Avatar.Root>
-						<p class="flex-1 text-ellipsis">{membership.user.username}</p>
-						<Select.Root selected={role} items={roles}>
-							<Select.Trigger>
-								<Select.Value placeholder="Role" class="capitalize" />
-							</Select.Trigger>
-							<Select.Content>
-								{#each roles as role}
-									<Select.Item value={role.value}>{role.label}</Select.Item>
-								{/each}
-							</Select.Content>
-						</Select.Root>
+						<p class="flex-1 text-ellipsis text-sm">{membership.user.username}</p>
+						<form action="?/updateRole" method="POST">
+							<Select.Root
+								selected={role}
+								items={roles}
+								onSelectedChange={async (newRole) => {
+									const data = new FormData();
+									data.set('userId', membership.userId);
+									data.set('role', newRole.value);
+									await fetch('?/updateRole', {
+										method: 'POST',
+										body: data
+									});
+								}}
+							>
+								<Select.Trigger>
+									<Select.Value placeholder="Role" class="capitalize" />
+								</Select.Trigger>
+								<Select.Content>
+									{#each roles as role}
+										<Select.Item value={role.value}>{role.label}</Select.Item>
+									{/each}
+								</Select.Content>
+							</Select.Root>
+						</form>
 						{#if isOwner}
-							<Button variant="ghost" size="icon">
+							<Button
+								variant="ghost"
+								size="icon"
+								on:click={() => removeMemberAlertId.set(membership.userId)}
+							>
 								<XIcon size={16} />
 							</Button>
 						{/if}
@@ -86,8 +119,30 @@
 			</div>
 			<Separator />
 			<div class="flex flex-col gap-4">
+				<h2 class="font-semibold">Invitations</h2>
+				{#each data.projectInvitations as invitation}
+					<Card.Root class="flex items-center gap-4 px-4 py-2">
+						<Avatar.Root class="h-8 w-8">
+							<Avatar.Fallback class="capitalize">{invitation.user.username[0]}</Avatar.Fallback>
+						</Avatar.Root>
+						<p class="flex-1 text-ellipsis text-sm">{invitation.user.username}</p>
+						{#if isOwner}
+							<form action="?/deleteInvitation" method="POST">
+								<input type="hidden" name="invitationId" value={invitation.id} />
+								<Button type="submit" variant="ghost" size="icon">
+									<XIcon size={16} />
+								</Button>
+							</form>
+						{/if}
+					</Card.Root>
+				{/each}
+			</div>
+			<Separator />
+			<div class="flex flex-col gap-4">
 				<h2 class="font-semibold">Danger Zone</h2>
-				<Button variant="secondary">Delete Project</Button>
+				<Button variant="secondary" on:click={() => deleteProjectAlertId.set(data.project.id)}
+					>Delete Project</Button
+				>
 			</div>
 		</Card.Content>
 	</Card.Root>

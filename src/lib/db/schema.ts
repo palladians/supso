@@ -1,5 +1,5 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { sqliteTable, text, blob, integer, numeric } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, blob, integer, numeric, unique } from 'drizzle-orm/sqlite-core';
 import type { z } from 'zod';
 import { relations } from 'drizzle-orm';
 
@@ -65,7 +65,7 @@ export const usersToProjects = sqliteTable('users_to_projects', {
 		.references(() => user.id),
 	projectId: text('project_id')
 		.notNull()
-		.references(() => project.id),
+		.references(() => project.id, { onDelete: 'cascade' }),
 	role: text('role', { enum: ['member', 'admin'] })
 		.notNull()
 		.default('member')
@@ -91,7 +91,7 @@ export const event = sqliteTable('event', {
 		.$defaultFn(() => crypto.randomUUID()),
 	projectId: text('project_id')
 		.notNull()
-		.references(() => project.id),
+		.references(() => project.id, { onDelete: 'cascade' }),
 	channel: text('channel').notNull(),
 	event: text('event').notNull(),
 	content: text('content'),
@@ -110,7 +110,7 @@ export const board = sqliteTable('board', {
 		.$defaultFn(() => crypto.randomUUID()),
 	projectId: text('project_id')
 		.notNull()
-		.references(() => project.id),
+		.references(() => project.id, { onDelete: 'cascade' }),
 	name: text('name').notNull(),
 	tag: text('tag').notNull(),
 	options: text('options', { mode: 'json' }).notNull(),
@@ -125,7 +125,7 @@ export const featureFlag = sqliteTable('feature_flag', {
 		.$defaultFn(() => crypto.randomUUID()),
 	projectId: text('project_id')
 		.notNull()
-		.references(() => project.id),
+		.references(() => project.id, { onDelete: 'cascade' }),
 	name: text('name').notNull(),
 	description: text('description'),
 	enabled: numeric('enabled').default('false'),
@@ -133,22 +133,54 @@ export const featureFlag = sqliteTable('feature_flag', {
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
+export const projectInvitation = sqliteTable(
+	'project_invitation',
+	{
+		id: text('id')
+			.primaryKey()
+			.notNull()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id),
+		projectId: text('project_id')
+			.notNull()
+			.references(() => project.id)
+	},
+	(t) => ({
+		userProjectUnique: unique().on(t.userId, t.projectId)
+	})
+);
+
 export const usersRelations = relations(user, ({ many }) => ({
 	usersToProjects: many(usersToProjects),
-	accessTokens: many(accessToken)
+	accessTokens: many(accessToken),
+	projectInvitations: many(projectInvitation)
 }));
 
 export const projectsRelations = relations(project, ({ many }) => ({
 	usersToProjects: many(usersToProjects),
 	events: many(event),
 	boards: many(board),
-	featureFlags: many(featureFlag)
+	featureFlags: many(featureFlag),
+	projectInvitations: many(projectInvitation)
 }));
 
 export const accessTokenRelations = relations(accessToken, ({ one }) => ({
 	user: one(user, {
 		fields: [accessToken.userId],
 		references: [user.id]
+	})
+}));
+
+export const projectInvitationRelations = relations(projectInvitation, ({ one }) => ({
+	user: one(user, {
+		fields: [projectInvitation.userId],
+		references: [user.id]
+	}),
+	project: one(project, {
+		fields: [projectInvitation.projectId],
+		references: [project.id]
 	})
 }));
 
