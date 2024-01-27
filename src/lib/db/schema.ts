@@ -114,6 +114,7 @@ export const board = sqliteTable('board', {
 	name: text('name').notNull(),
 	tag: text('tag').notNull(),
 	options: text('options', { mode: 'json' }).notNull(),
+	eventsOrder: text('events_order', { mode: 'json' }),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -222,7 +223,10 @@ const insertProjectSchema = createInsertSchema(project);
 const selectProjectSchema = createSelectSchema(project);
 export const insertEventSchema = createInsertSchema(event);
 const selectEventSchema = createSelectSchema(event);
+export const insertBoardSchema = createInsertSchema(board);
+const selectBoardSchema = createSelectSchema(board);
 
 export type User = z.infer<typeof insertUserSchema> & z.infer<typeof selectUserSchema>;
 export type Project = z.infer<typeof insertProjectSchema> & z.infer<typeof selectProjectSchema>;
 export type Event = z.infer<typeof insertEventSchema> & z.infer<typeof selectEventSchema>;
+export type Board = z.infer<typeof insertBoardSchema> & z.infer<typeof selectBoardSchema>;

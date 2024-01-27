@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '@carbon/charts-svelte/styles.css';
-	import { BarChartSimple, ChartTheme } from '@carbon/charts-svelte';
+	import { BarChartSimple, ChartTheme, ScaleTypes } from '@carbon/charts-svelte';
 
 	export let data;
 </script>
@@ -23,15 +23,15 @@
 		},
 		axes: {
 			left: { mapsTo: 'events' },
-			bottom: { mapsTo: 'date', scaleType: 'labels' }
+			bottom: { mapsTo: 'date', scaleType: ScaleTypes.LABELS }
 		},
 		color: {
 			pairing: {
-				option: 2
+				option: 4
 			},
 			scale: {
-				Qty: '#925699',
-				Misc: '#525669'
+				Qty: '#14b8a6',
+				Misc: '#14b8a6'
 			}
 		}
 	}}

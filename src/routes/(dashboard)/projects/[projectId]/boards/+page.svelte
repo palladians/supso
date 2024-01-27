@@ -3,8 +3,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { PlusIcon } from 'lucide-svelte';
-	import { currentProjectId } from '$lib/stores/user';
 	import { KanbanSquareIcon } from 'lucide-svelte';
+	import { page } from '$app/stores';
 
 	export let data;
 </script>
@@ -12,7 +12,11 @@
 <div class="flex flex-col gap-4">
 	<div class="flex justify-between">
 		<h2 class="text-lg font-semibold">Boards</h2>
-		<Button href={`/projects/${$currentProjectId}/boards/create`} variant="secondary" class="gap-1">
+		<Button
+			href={`/projects/${$page.params.projectId}/boards/create`}
+			variant="secondary"
+			class="gap-1"
+		>
 			<PlusIcon size={16} />
 			Create Board
 		</Button>

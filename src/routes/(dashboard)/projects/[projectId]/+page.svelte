@@ -1,26 +1,39 @@
 <script lang="ts">
 	import EventsChart from '$lib/components/charts/events-chart.svelte';
+	import EventsTableShort from '$lib/components/dashboard/events-table-short.svelte';
 	import { page } from '$app/stores';
 	import * as Card from '$lib/components/ui/card';
-	import * as Table from '$lib/components/ui/table';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Button } from '$lib/components/ui/button';
-	import { Badge } from '$lib/components/ui/badge';
-	import { currentProjectId } from '$lib/stores/user';
 	import { onMount } from 'svelte';
-	import { formatDate } from '$lib/format/date';
 	import { SettingsIcon } from 'lucide-svelte';
-
-	onMount(() => {
-		currentProjectId.set($page.params.projectId);
-	});
+	import { events } from '$lib/stores/events';
+	import { take } from 'rambda';
+	import { goto } from '$app/navigation';
 
 	export let data;
+	export let lastFiveEvents = data.lastFiveEvents;
+
+	onMount(() => {
+		events.subscribe((events) => {
+			const newEvents = events
+				.filter((event) => event.projectId === $page.params.projectId)
+				.map((event) => ({ ...event, new: true }));
+			lastFiveEvents = take(5, [...newEvents, ...lastFiveEvents]);
+		});
+	});
 </script>
 
 <div class="flex flex-col gap-4">
 	<div class="flex items-center justify-between">
-		<h2 class="text-lg font-semibold">Overview</h2>
+		<div class="flex flex-col">
+			<div class="text-muted-foreground flex gap-2 text-sm">
+				<a href="/projects">Projects</a>
+				<p class="text-muted">/</p>
+				<a href={`/projects/${data.project.id}`}>{data.project.name}</a>
+			</div>
+			<h2 class="text-lg font-semibold">Overview</h2>
+		</div>
 		{#if data.role === 'admin'}
 			<Button
 				href={`/projects/${$page.params.projectId}/settings`}
@@ -37,7 +50,14 @@
 			<Card.Header>
 				<div class="flex items-center justify-between">
 					<Card.Title>Events</Card.Title>
-					<Tabs.Root value="1w">
+					<Tabs.Root
+						value={data.duration}
+						onValueChange={(value) => {
+							if (!value) return;
+							$page.url.searchParams.set('duration', value);
+							goto($page.url);
+						}}
+					>
 						<Tabs.List>
 							<Tabs.Trigger value="1y">1y</Tabs.Trigger>
 							<Tabs.Trigger value="1m">1m</Tabs.Trigger>
@@ -60,37 +80,7 @@
 				</div>
 			</Card.Header>
 			<Card.Content>
-				<Table.Root>
-					<Table.Header>
-						<Table.Row>
-							<Table.Head>Event</Table.Head>
-							<Table.Head>Channel</Table.Head>
-							<Table.Head class="text-right">Created</Table.Head>
-						</Table.Row>
-					</Table.Header>
-					<Table.Body>
-						{#each data.lastFiveEvents as event}
-							<Table.Row>
-								<Table.Cell>
-									<a href={`/events/${event.id}`} class="flex items-center gap-2">
-										{#if event.emoji}
-											<Badge variant="secondary" class="text-lg">{event.emoji}</Badge>
-										{/if}
-										<span>
-											{event.event}
-										</span>
-									</a>
-								</Table.Cell>
-								<Table.Cell>
-									<Badge variant="secondary">
-										#{event.channel}
-									</Badge>
-								</Table.Cell>
-								<Table.Cell class="text-right">{formatDate(event.createdAt ?? '')}</Table.Cell>
-							</Table.Row>
-						{/each}
-					</Table.Body>
-				</Table.Root>
+				<EventsTableShort lastEvents={lastFiveEvents} />
 			</Card.Content>
 		</Card.Root>
 	</div>

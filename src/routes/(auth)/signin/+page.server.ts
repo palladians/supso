@@ -1,5 +1,5 @@
 import { db } from '$lib/db';
-import { user, verificationCode } from '$lib/db/schema';
+import { accessToken, user, verificationCode } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
@@ -11,15 +11,19 @@ import { PUBLIC_APP_URL } from '$env/static/public';
 const ensureUser = async ({ email }: { email: string }) => {
 	const existingUser = await db.query.user.findFirst({ where: eq(user.email, email) });
 	if (existingUser) return existingUser;
-	const [newUser] = await db
-		.insert(user)
-		.values({
-			email,
-			username: uniqueNamesGenerator({
-				dictionaries: [adjectives, colors, animals]
+	const newUser = await db.transaction(async (tx) => {
+		const [newUser] = await tx
+			.insert(user)
+			.values({
+				email,
+				username: uniqueNamesGenerator({
+					dictionaries: [adjectives, colors, animals]
+				})
 			})
-		})
-		.returning();
+			.returning();
+		await tx.insert(accessToken).values({ name: 'Default', userId: newUser.id });
+		return newUser;
+	});
 	return newUser;
 };
 

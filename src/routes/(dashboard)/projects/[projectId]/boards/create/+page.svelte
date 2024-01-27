@@ -4,14 +4,14 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronLeftIcon } from 'lucide-svelte';
-	import { currentProjectId } from '$lib/stores/user';
+	import { page } from '$app/stores';
 </script>
 
 <div class="flex flex-1 items-center justify-center">
 	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<div class="flex items-center gap-4">
-				<Button href={`/projects/${$currentProjectId}/boards`} variant="secondary" size="icon">
+				<Button href={`/projects/${$page.params.projectId}/boards`} variant="secondary" size="icon">
 					<ChevronLeftIcon size={16} />
 				</Button>
 				<Card.Title>Create Board</Card.Title>
@@ -27,10 +27,12 @@
 					<Label for="boardTag">Board Tag</Label>
 					<Input id="boardTag" name="tag" />
 				</fieldset>
-                <fieldset class="flex flex-col gap-2">
+				<fieldset class="flex flex-col gap-2">
 					<Label for="boardTag">Tag Values</Label>
 					<Input id="boardTag" name="tagValues" />
-                    <p class="text-sm text-muted-foreground">Separate values with comma. Like: "apple,pear,banana"</p>
+					<p class="text-muted-foreground text-sm">
+						Separate values with comma. Like: "apple,pear,banana"
+					</p>
 				</fieldset>
 				<Button type="submit">Create Board</Button>
 			</form>

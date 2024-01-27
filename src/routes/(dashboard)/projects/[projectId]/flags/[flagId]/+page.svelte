@@ -4,7 +4,7 @@
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
 	import { ChevronLeftIcon } from 'lucide-svelte';
-	import { currentProjectId } from '$lib/stores/user';
+	import { page } from '$app/stores';
 
 	export let data;
 	export const formData = {
@@ -17,7 +17,7 @@
 	<Card.Root class="w-full max-w-[32rem]">
 		<Card.Header>
 			<div class="flex items-center gap-4">
-				<Button href={`/projects/${$currentProjectId}/flags`} variant="secondary" size="icon">
+				<Button href={`/projects/${$page.params.projectId}/flags`} variant="secondary" size="icon">
 					<ChevronLeftIcon size={16} />
 				</Button>
 				<Card.Title>Edit "{data.flag?.name}"</Card.Title>

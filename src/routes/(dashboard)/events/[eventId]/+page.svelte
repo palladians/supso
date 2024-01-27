@@ -4,7 +4,6 @@
 	import Highlight from 'svelte-highlight';
 	import json from 'svelte-highlight/languages/json';
 	import githubDark from 'svelte-highlight/styles/github-dark';
-	import { currentProjectId } from '$lib/stores/user.js';
 
 	export let data;
 
@@ -16,14 +15,16 @@
 	{@html githubDark}
 </svelte:head>
 
-<div class="flex gap-4">
+<Card.Root class="flex gap-4 p-6">
 	<div class="flex flex-[2] flex-col gap-8">
-		<div class="flex gap-2">
+		<div class="flex gap-2 text-sm">
 			<a class="text-muted-foreground" href="/projects">Projects</a>
 			<span class="text-muted">/</span>
-			<a class="text-muted-foreground" href={`/projects/${$currentProjectId}`}>Pallad</a>
+			<a class="text-muted-foreground" href={`/projects/${data.event.project.id}`}
+				>{data.event.project.name}</a
+			>
 			<span class="text-muted">/</span>
-			<a class="text-muted-foreground" href={`/projects/${$currentProjectId}/events`}>Events</a>
+			<a class="text-muted-foreground" href={`/projects/${data.event.project.id}/events`}>Events</a>
 		</div>
 		<div class="grid grid-cols-[1fr_3fr] items-center justify-center gap-6">
 			<p class="text-muted-foreground">ID</p>
@@ -54,4 +55,4 @@
 			</Card.Content>
 		</Card.Root>
 	</div>
-</div>
+</Card.Root>

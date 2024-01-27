@@ -4,13 +4,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Switch } from '$lib/components/ui/switch';
-	import { currentProjectId } from '$lib/stores/user';
+	import { page } from '$app/stores';
 	import { PlusIcon } from 'lucide-svelte';
 	import DeleteFlagAlert from '$lib/components/alerts/delete-flag-alert.svelte';
 	import { writable } from 'svelte/store';
 
 	export let data;
-	$: currentProject = data.projects.find((project) => project.id === $currentProjectId);
+	$: currentProject = data.projects.find((project) => project.id === $page.params.projectId);
 
 	export const deleteFlagAlertId = writable<string | null>(null);
 </script>
@@ -22,7 +22,7 @@
 			<div class="flex items-center justify-between">
 				<Card.Title>{currentProject?.name} Feature Flags</Card.Title>
 				<Button
-					href={`/projects/${$currentProjectId}/flags/create`}
+					href={`/projects/${$page.params.projectId}/flags/create`}
 					variant="secondary"
 					size="sm"
 					class="gap-1"
@@ -54,7 +54,7 @@
 								<div class="flex items-center justify-between">
 									<div class="flex items-center gap-4">
 										<Button
-											href={`/projects/${$currentProjectId}/flags/${featureFlag.id}`}
+											href={`/projects/${$page.params.projectId}/flags/${featureFlag.id}`}
 											variant="link"
 											class="p-0">Edit</Button
 										>

@@ -5,6 +5,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { cn } from '$lib/utils';
 	import { tick } from 'svelte';
+	import type { Writable } from 'svelte/store';
 
 	type Option = {
 		value: string;
@@ -13,10 +14,10 @@
 
 	export let options: Option[];
 	export let placeholder: string;
+	export let value: Writable<string | null>;
 
 	let open = false;
-	let value = '';
-	$: selectedValue = options.find((f) => f.value === value)?.label ?? placeholder;
+	$: selectedValue = options.find((f) => f.value === $value)?.label ?? placeholder;
 
 	function closeAndFocusTrigger(triggerId: string) {
 		open = false;
@@ -48,11 +49,12 @@
 					<Command.Item
 						value={option.value}
 						onSelect={(currentValue) => {
-							value = currentValue;
+							if (currentValue === $value) return value.set(null);
+							value.set(currentValue);
 							closeAndFocusTrigger(ids.trigger);
 						}}
 					>
-						<Check class={cn('mr-2 h-4 w-4', value !== option.value && 'text-transparent')} />
+						<Check class={cn('mr-2 h-4 w-4', $value !== option.value && 'text-transparent')} />
 						{option.label}
 					</Command.Item>
 				{/each}
