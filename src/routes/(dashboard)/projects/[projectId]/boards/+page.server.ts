@@ -4,7 +4,8 @@ import type { PageServerLoad } from './$types';
 import { usersToProjects } from '$lib/db/schema';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, parent }) => {
+	const parentData = await parent();
 	const { projectId } = params;
 	const session = await locals.auth.validate();
 	const project = await db.query.usersToProjects.findFirst({
@@ -17,6 +18,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	if (!project) return error(404);
 	const boards = project.project.boards;
 	return {
-		boards
+		boards,
+		project: parentData.membership.project
 	};
 };

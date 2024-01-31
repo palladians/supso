@@ -1,6 +1,7 @@
 <script lang="ts">
 	import EventsChart from '$lib/components/charts/events-chart.svelte';
 	import EventsTableShort from '$lib/components/dashboard/events-table-short.svelte';
+	import PageTitle from '$lib/components/dashboard/page-navbar.svelte';
 	import { page } from '$app/stores';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
@@ -15,36 +16,33 @@
 	export let lastFiveEvents = data.lastFiveEvents;
 
 	onMount(() => {
-		events.subscribe((events) => {
+		const unsub = events.subscribe((events) => {
 			const newEvents = events
 				.filter((event) => event.projectId === $page.params.projectId)
 				.map((event) => ({ ...event, new: true }));
 			lastFiveEvents = take(5, [...newEvents, ...lastFiveEvents]);
 		});
+		return () => {
+			unsub();
+		};
 	});
 </script>
 
-<div class="flex flex-col gap-4">
-	<div class="flex items-center justify-between">
-		<div class="flex flex-col">
-			<div class="text-muted-foreground flex gap-2 text-sm">
-				<a href="/projects">Projects</a>
-				<p class="text-muted">/</p>
-				<a href={`/projects/${data.project.id}`}>{data.project.name}</a>
-			</div>
-			<h2 class="text-lg font-semibold">Overview</h2>
+<div class="container flex flex-col">
+	<PageTitle title="Overview">
+		<div slot="addon">
+			{#if data.role === 'admin'}
+				<Button
+					href={`/projects/${$page.params.projectId}/settings`}
+					variant="secondary"
+					class="gap-1"
+				>
+					<SettingsIcon size={16} />
+					<span>Project Settings</span>
+				</Button>
+			{/if}
 		</div>
-		{#if data.role === 'admin'}
-			<Button
-				href={`/projects/${$page.params.projectId}/settings`}
-				variant="secondary"
-				class="gap-1"
-			>
-				<SettingsIcon size={16} />
-				<span>Project Settings</span>
-			</Button>
-		{/if}
-	</div>
+	</PageTitle>
 	<div class="grid grid-cols-2 gap-4">
 		<Card.Root>
 			<Card.Header>

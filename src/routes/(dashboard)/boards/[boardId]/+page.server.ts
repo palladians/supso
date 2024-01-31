@@ -28,7 +28,8 @@ export const actions: Actions = {
 		await db
 			.update(boardScheme)
 			.set({
-				eventsOrder
+				eventsOrder,
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(boardScheme.id, boardId));
 		redirect(302, `/boards/${boardId}`);
@@ -53,7 +54,7 @@ export const actions: Actions = {
 		);
 		if (!permitted) return error(400);
 		const formData = await request.formData();
-		const eventId = formData.get('eventId');
+		const eventId = formData.get('eventId')?.toString();
 		const event = board.project.events.find((event) => event.id === eventId);
 		if (!event) return error(400, 'Event not found');
 		const key = formData.get('key');
@@ -65,9 +66,36 @@ export const actions: Actions = {
 		await db
 			.update(eventScheme)
 			.set({
-				tags: updatedTags
+				tags: updatedTags,
+				updatedAt: Number(new Date()).toString()
 			})
-			.where(eq(eventScheme.id, eventId));
+			.where(eq(eventScheme.id, eventId ?? ''));
+		redirect(302, `/boards/${boardId}`);
+	},
+	deleteEvent: async ({ request, locals, params }) => {
+		const { boardId } = params;
+		const session = await locals.auth.validate();
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const board = await db.query.board.findFirst({
+			where: eq(boardScheme.id, boardId),
+			with: {
+				project: {
+					with: {
+						usersToProjects: true,
+						events: {
+							where: eq(eventScheme.id, id ?? '')
+						}
+					}
+				}
+			}
+		});
+		if (!board) return error(404);
+		const permitted = board.project.usersToProjects.some(
+			(userToProject) => userToProject.userId === session.user.userId
+		);
+		if (!permitted) return error(400);
+		await db.delete(eventScheme).where(eq(eventScheme.id, board.project.events[0].id));
 		redirect(302, `/boards/${boardId}`);
 	}
 };
@@ -83,5 +111,5 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		(userToProject) => userToProject.userId === session.user.userId
 	);
 	if (!viewAllowed) return error(404);
-	return { board };
+	return { board, project: board.project };
 };

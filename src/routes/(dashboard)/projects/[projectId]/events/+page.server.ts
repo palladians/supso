@@ -41,7 +41,8 @@ const fetchEvents = async ({
 	});
 };
 
-export const load: PageServerLoad = async ({ locals, params, url }) => {
+export const load: PageServerLoad = async ({ locals, params, url, parent }) => {
+	const parentData = await parent();
 	const lastCursor = url.searchParams.get('last_cursor');
 	const channel = url.searchParams.get('channel');
 	const event = url.searchParams.get('event');
@@ -51,5 +52,5 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 	const eventNames = uniq(events.map((event) => event.event));
 	const pages = Math.floor(events.length / PAGE_SIZE);
 
-	return { events, channels, eventNames, pages };
+	return { events, channels, eventNames, pages, project: parentData.membership.project };
 };

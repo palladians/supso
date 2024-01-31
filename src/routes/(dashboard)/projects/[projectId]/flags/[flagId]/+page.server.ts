@@ -40,7 +40,8 @@ export const actions: Actions = {
 			.update(featureFlag)
 			.set({
 				name,
-				description
+				description,
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(featureFlag.id, flagId));
 		redirect(302, `/projects/${projectId}/flags`);

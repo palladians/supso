@@ -4,6 +4,7 @@ import { db } from '$lib/db';
 import { and, eq, gt } from 'drizzle-orm';
 import { event as eventScheme, usersToProjects } from '$lib/db/schema';
 import { getTime, sub } from 'date-fns';
+import superjson from 'superjson';
 
 export const GET: RequestHandler = async ({ locals, request }) => {
 	const { searchParams } = new URL(request.url);
@@ -31,7 +32,8 @@ export const GET: RequestHandler = async ({ locals, request }) => {
 					}
 				});
 				const events = memberships.map((membership) => membership.project.events).flat();
-				controller.enqueue(`data: ${JSON.stringify(events)}`);
+				const payload = superjson.stringify(events);
+				controller.enqueue('data: ' + payload);
 			}, 5000);
 		},
 		cancel() {

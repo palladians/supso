@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
@@ -10,6 +11,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	const PAGE_LENGTH = 10;
 	export let data;
@@ -21,27 +23,32 @@
 	export const channel = writable<string | null>($page.url.searchParams.get('channel'));
 	export const event = writable<string | null>($page.url.searchParams.get('event'));
 
-	channel.subscribe((newChannel) => {
-		if (!browser) return;
-		$page.url.searchParams.set('channel', newChannel ?? '');
-		goto($page.url);
-	});
+	onMount(() => {
+		const unsubChannel = channel.subscribe((newChannel) => {
+			if (!browser) return;
+			$page.url.searchParams.set('channel', newChannel ?? '');
+			goto($page.url);
+		});
 
-	event.subscribe((newEvent) => {
-		if (!browser) return;
-		$page.url.searchParams.set('event', newEvent ?? '');
-		goto($page.url);
+		const unsubEvent = event.subscribe((newEvent) => {
+			if (!browser) return;
+			$page.url.searchParams.set('event', newEvent ?? '');
+			goto($page.url);
+		});
+		return () => {
+			unsubChannel();
+			unsubEvent();
+		};
 	});
 </script>
 
-<div class="flex flex-col gap-4">
-	<div class="flex items-center justify-between">
-		<h2 class="text-lg font-semibold">Events</h2>
-		<div class="flex items-center gap-2">
+<div class="container flex flex-col">
+	<PageNavbar title="Events">
+		<div class="flex items-center gap-2" slot="addon">
 			<Combobox placeholder="Channel" options={channelOptions} value={channel} />
 			<Combobox placeholder="Event" options={eventOptions} value={event} />
 		</div>
-	</div>
+	</PageNavbar>
 	<Card.Root class="p-6">
 		<Table.Root>
 			<Table.Header>
@@ -67,13 +74,11 @@
 							<Badge variant="secondary">#{event.channel}</Badge>
 						</Table.Cell>
 						<Table.Cell>
-							<Badge variant="secondary">
-								{#if event.notify}
-									<CheckIcon size={16} />
-								{:else}
-									<XIcon size={16} />
-								{/if}
-							</Badge>
+							{#if event.notify}
+								<CheckIcon size={16} />
+							{:else}
+								<XIcon size={16} />
+							{/if}
 						</Table.Cell>
 						<Table.Cell>
 							<div class="flex items-center justify-end gap-2">

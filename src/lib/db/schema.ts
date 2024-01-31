@@ -99,6 +99,11 @@ export const event = sqliteTable('event', {
 	notify: numeric('notify').default('false'),
 	tags: text('tags', { mode: 'json' }),
 	context: text('context', { mode: 'json' }),
+	priority: text('priority', { enum: ['low', 'normal', 'high'] })
+		.notNull()
+		.default('normal'),
+	assigneeId: text('assignee_id').references(() => user.id),
+	dueDate: text('due_date'),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -156,7 +161,8 @@ export const projectInvitation = sqliteTable(
 export const usersRelations = relations(user, ({ many }) => ({
 	usersToProjects: many(usersToProjects),
 	accessTokens: many(accessToken),
-	projectInvitations: many(projectInvitation)
+	projectInvitations: many(projectInvitation),
+	assignedEvents: many(event)
 }));
 
 export const projectsRelations = relations(project, ({ many }) => ({
@@ -200,6 +206,10 @@ export const eventRelations = relations(event, ({ one }) => ({
 	project: one(project, {
 		fields: [event.projectId],
 		references: [project.id]
+	}),
+	assignee: one(user, {
+		fields: [event.assigneeId],
+		references: [user.id]
 	})
 }));
 

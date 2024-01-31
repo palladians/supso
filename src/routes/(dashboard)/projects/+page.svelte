@@ -9,16 +9,19 @@
 	export let lastTenEvents = data.lastTenEvents;
 
 	onMount(() => {
-		events.subscribe((events) => {
+		const unsub = events.subscribe((events) => {
 			const newEvents = events.map((event) => ({ ...event, new: true }));
 			lastTenEvents = take(10, [...newEvents, ...lastTenEvents]);
 		});
+		return () => {
+			unsub();
+		};
 	});
 </script>
 
-<div class="flex flex-1">
-	<Card.Root class="flex w-full flex-col gap-8 p-4">
-		<h2 class="text-lg font-semibold">Latest Events (All projects)</h2>
+<div class="container flex flex-1 flex-col">
+	<h2 class="py-4 text-lg font-semibold">Latest Events (All projects)</h2>
+	<Card.Root class="flex w-full flex-col gap-8 p-6">
 		<EventsTableShort lastEvents={lastTenEvents} />
 	</Card.Root>
 </div>

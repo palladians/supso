@@ -1,9 +1,8 @@
 import { db } from '$lib/db';
-import { and, desc, eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 import { groupBy, take } from 'rambda';
-import { usersToProjects, event as eventScheme } from '$lib/db/schema';
-import { error } from '@sveltejs/kit';
+import { event as eventScheme } from '$lib/db/schema';
 import { formatDateShort } from '$lib/format/date';
 import { format, eachDayOfInterval, eachMonthOfInterval, subMonths } from 'date-fns';
 import { enUS } from 'date-fns/locale';
@@ -41,36 +40,24 @@ const buildEventsChartData = ({
 		.map((date) => ({ date, events: groupedEvents[date]?.length ?? 0 }));
 };
 
-export const load: PageServerLoad = async ({ locals, params, url }) => {
+export const load: PageServerLoad = async ({ params, url, parent }) => {
+	const parentData = await parent();
 	const { searchParams } = url;
 	const duration = searchParams.get('duration') ?? '1w';
-	const session = await locals.auth.validate();
-	const membership = await db.query.usersToProjects.findFirst({
-		where: and(
-			eq(usersToProjects.projectId, params.projectId),
-			eq(usersToProjects.userId, session.user.userId)
-		),
-		with: {
-			project: {
-				with: {
-					events: {
-						orderBy: desc(eventScheme.createdAt)
-					}
-				}
-			}
-		}
+	const events = await db.query.event.findMany({
+		where: eq(eventScheme.projectId, params.projectId),
+		orderBy: desc(eventScheme.createdAt)
 	});
-	if (!membership) error(401);
 	const eventsByDate = groupBy(
 		(events) => events.date,
-		membership.project.events.map((event) => ({
+		events.map((event) => ({
 			...event,
 			date: formatDateShort(event.createdAt ?? '')
 		}))
 	);
 	const eventsByMonth = groupBy(
 		(events) => (events?.createdAt ? format(new Date(parseInt(events.createdAt)), 'y-MM') : ''),
-		membership.project.events.map((event) => ({
+		events.map((event) => ({
 			...event,
 			date: formatDateShort(event.createdAt ?? '')
 		}))
@@ -79,13 +66,14 @@ export const load: PageServerLoad = async ({ locals, params, url }) => {
 		groupedEvents: duration === '1y' ? eventsByMonth : eventsByDate,
 		duration
 	});
-	const lastFiveEvents = take(5, membership.project.events);
+	const lastFiveEvents = take(5, events);
 
 	return {
-		role: membership.role,
+		...parentData,
+		role: parentData.membership.role,
 		lastFiveEvents,
 		eventsChartData,
-		project: membership.project,
+		project: parentData.membership.project,
 		duration
 	};
 };

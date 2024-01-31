@@ -1,3 +1,5 @@
+import superjson from 'superjson';
+
 type ToJsonProps = {
 	body: ReadableStream<Uint8Array>;
 	callback: (payload: never) => void;
@@ -16,10 +18,19 @@ export const toJSON = async ({ body, callback }: ToJsonProps) => {
 
 		const chunk = decoder.decode(value, { stream: true });
 		const data = chunk.split('data: ')[1];
-		const payload = JSON.parse(data);
-		callback(payload as never);
+		let payload;
+		try {
+			payload = superjson.parse(data);
+		} catch {
+			payload = [];
+		}
+		callback((payload as never) ?? []);
 		return read();
 	};
 
-	return read();
+	await read();
+
+	return {
+		cancel: reader.cancel
+	};
 };

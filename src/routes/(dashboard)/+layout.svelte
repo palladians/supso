@@ -8,17 +8,20 @@
 	export let data;
 
 	onMount(async () => {
-		await subscribeToEvents({
+		const { cancel } = await subscribeToEvents({
 			accessToken: data.user.accessTokens[0].id,
 			callback: events.set
 		});
+		return () => {
+			cancel();
+		};
 	});
 </script>
 
-<main class="flex min-h-screen flex-1 gap-4">
+<main class="grid max-w-[100vw] flex-1 grid-cols-[min-content_1fr] gap-4">
 	<Sidebar />
 	<div class="flex flex-[4] flex-col gap-4">
-		<div class="container flex flex-1 flex-col p-2 pb-24">
+		<div class="flex flex-1 flex-col pb-24">
 			<slot />
 		</div>
 		<Footer />

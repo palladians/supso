@@ -1,8 +1,10 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { db } from '$lib/db';
-import { eq } from 'drizzle-orm';
-import { board as boardScheme } from '$lib/db/schema';
+import { eq, gt, or } from 'drizzle-orm';
+import { board as boardScheme, event as eventScheme } from '$lib/db/schema';
+import superjson from 'superjson';
+import { getTime, sub } from 'date-fns';
 
 export const GET: RequestHandler = async ({ locals, request }) => {
 	const { searchParams } = new URL(request.url);
@@ -14,12 +16,19 @@ export const GET: RequestHandler = async ({ locals, request }) => {
 	const readable = new ReadableStream({
 		start(controller) {
 			interval = setInterval(async () => {
+				const fiveSecondsAgo = getTime(sub(new Date(), { seconds: 5 }));
 				const board = await db.query.board.findFirst({
 					where: eq(boardScheme.id, boardId),
 					with: {
 						project: {
 							with: {
-								usersToProjects: true
+								usersToProjects: true,
+								events: {
+									where: or(
+										gt(eventScheme.updatedAt, fiveSecondsAgo.toString()),
+										gt(eventScheme.createdAt, fiveSecondsAgo.toString())
+									)
+								}
 							}
 						}
 					}
@@ -29,7 +38,11 @@ export const GET: RequestHandler = async ({ locals, request }) => {
 					(membership) => membership.userId === user.id
 				);
 				if (!permitted) return error(400, 'Unauthorized');
-				controller.enqueue(`data: ${JSON.stringify({ eventsOrder: board.eventsOrder })}`);
+				const payload = superjson.stringify({
+					eventsOrder: board.eventsOrder,
+					events: board.project.events
+				});
+				controller.enqueue('data: ' + payload);
 			}, 5000);
 		},
 		cancel() {

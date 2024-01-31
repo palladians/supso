@@ -15,5 +15,5 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		(userToProject) => userToProject.userId === session.user.userId
 	);
 	if (!viewAllowed) return error(404);
-	return { event };
+	return { event, project: event.project };
 };

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
@@ -10,29 +11,24 @@
 	import { writable } from 'svelte/store';
 
 	export let data;
-	$: currentProject = data.projects.find((project) => project.id === $page.params.projectId);
-
 	export const deleteFlagAlertId = writable<string | null>(null);
 </script>
 
-<div class="flex flex-1 items-center justify-center">
+<div class="container flex flex-1">
 	<DeleteFlagAlert open={deleteFlagAlertId} />
-	<Card.Root class="w-full max-w-[32rem]">
-		<Card.Header>
-			<div class="flex items-center justify-between">
-				<Card.Title>{currentProject?.name} Feature Flags</Card.Title>
-				<Button
-					href={`/projects/${$page.params.projectId}/flags/create`}
-					variant="secondary"
-					size="sm"
-					class="gap-1"
-				>
-					<PlusIcon size={16} />
-					<span>Create Flag</span>
-				</Button>
-			</div>
-		</Card.Header>
-		<Card.Content>
+	<div class="flex flex-1 flex-col">
+		<PageNavbar title="Feature Flags" length={data.featureFlags.length}>
+			<Button
+				href={`/projects/${$page.params.projectId}/flags/create`}
+				variant="secondary"
+				class="gap-1"
+				slot="addon"
+			>
+				<PlusIcon size={16} />
+				<span>Create Flag</span>
+			</Button>
+		</PageNavbar>
+		<Card.Root class="flex-1 p-6">
 			<Accordion.Root>
 				{#each data.featureFlags as featureFlag}
 					<Accordion.Item value={featureFlag.id}>
@@ -74,6 +70,6 @@
 					</Accordion.Item>
 				{/each}
 			</Accordion.Root>
-		</Card.Content>
-	</Card.Root>
+		</Card.Root>
+	</div>
 </div>

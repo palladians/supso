@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Notifications from './notifications.svelte';
 	import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
 	import * as Collapsible from '$lib/components/ui/collapsible';
 	import * as Avatar from '$lib/components/ui/avatar';
@@ -18,12 +19,15 @@
 	export const isActive = (pathname: string) => $page.url.pathname === pathname;
 </script>
 
-<div class="sticky bottom-0 left-0 top-0 flex h-screen flex-1 flex-col justify-between border-r">
+<div
+	class="bg-background sticky bottom-0 left-0 top-0 z-20 flex h-screen flex-1 flex-col justify-between border-r"
+>
 	<div class="flex flex-col">
-		<div class="flex flex-col p-2">
+		<div class="flex justify-between p-2">
 			<Button size="sm" href="/projects" variant="ghost" class="h-10 justify-start">
-				<img src="/logo.svg" class="h-6" />
+				<img src="/logo.svg" class="h-6" alt="Logo" />
 			</Button>
+			<Notifications />
 		</div>
 		{#each $page.data.projects as project, i}
 			{@const collapsed = $sidebar?.[project.id]}
@@ -104,15 +108,15 @@
 	</div>
 	<div class="flex flex-col border-t p-2">
 		<DropdownMenu.Root>
-			<DropdownMenu.Trigger asChild>
-				<Button variant="ghost" class="justify-start gap-2">
+			<DropdownMenu.Trigger asChild let:builder>
+				<Button builders={[builder]} variant="ghost" class="justify-start gap-2">
 					<Avatar.Root class="h-8 w-8">
 						<Avatar.Fallback class="capitalize">{$page.data.user.username[0]}</Avatar.Fallback>
 					</Avatar.Root>
-					<span>{$page.data.user.username}</span>
+					<span class="w-full max-w-[11rem] truncate">{$page.data.user.username}</span>
 				</Button>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
+			<DropdownMenu.Content align="end">
 				<DropdownMenu.Item href="/profile">Profile</DropdownMenu.Item>
 				<DropdownMenu.Separator />
 				<form action="/api/signout" method="POST" class="flex flex-1">

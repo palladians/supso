@@ -27,7 +27,8 @@ export const actions: Actions = {
 			.update(projectScheme)
 			.set({
 				name,
-				ownerId
+				ownerId,
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(projectScheme.id, params.projectId));
 		redirect(302, `/projects/${params.projectId}/settings`);
@@ -64,7 +65,6 @@ export const actions: Actions = {
 	deleteInvitation: async ({ request, params, locals }) => {
 		const session = await locals.auth.validate();
 		const formData = await request.formData();
-		console.log(params.projectId, session.user.userId);
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),

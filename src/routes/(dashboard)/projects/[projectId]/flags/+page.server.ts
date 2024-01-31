@@ -24,7 +24,8 @@ export const actions: Actions = {
 		await db
 			.update(featureFlag)
 			.set({
-				enabled: String(!enabled)
+				enabled: String(!enabled),
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(featureFlag.id, flag.id));
 		redirect(302, `/projects/${projectId}/flags`);
@@ -49,7 +50,8 @@ export const actions: Actions = {
 	}
 };
 
-export const load: PageServerLoad = async ({ locals, params }) => {
+export const load: PageServerLoad = async ({ locals, params, parent }) => {
+	const parentData = await parent();
 	const { projectId } = params;
 	const session = await locals.auth.validate();
 	const project = await db.query.usersToProjects.findFirst({
@@ -62,6 +64,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 	if (!project) return error(404);
 	const featureFlags = project.project.featureFlags;
 	return {
-		featureFlags
+		featureFlags,
+		project: parentData.membership.project
 	};
 };

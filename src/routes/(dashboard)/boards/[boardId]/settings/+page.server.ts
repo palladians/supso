@@ -33,7 +33,8 @@ export const actions: Actions = {
 			.set({
 				name,
 				tag,
-				options: tagValuesArray
+				options: tagValuesArray,
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(boardScheme.id, boardId));
 		redirect(302, `/boards/${boardId}/settings`);

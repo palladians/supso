@@ -37,7 +37,8 @@ export const actions: Actions = {
 		await db
 			.update(userScheme)
 			.set({
-				username
+				username,
+				updatedAt: Number(new Date()).toString()
 			})
 			.where(eq(userScheme.id, session.user.userId));
 		return redirect(302, '/profile');
