@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Head from '$lib/components/head.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import EventsTableShort from '$lib/components/dashboard/events-table-short.svelte';
 	import { onMount } from 'svelte';
@@ -18,6 +19,8 @@
 		};
 	});
 </script>
+
+<Head title="Projects" />
 
 <div class="container flex flex-1 flex-col">
 	<h2 class="py-4 text-lg font-semibold">Latest Events (All projects)</h2>

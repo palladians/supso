@@ -27,13 +27,13 @@
 		const unsubChannel = channel.subscribe((newChannel) => {
 			if (!browser) return;
 			$page.url.searchParams.set('channel', newChannel ?? '');
-			goto($page.url);
+			goto($page.url, { invalidateAll: true });
 		});
 
 		const unsubEvent = event.subscribe((newEvent) => {
 			if (!browser) return;
 			$page.url.searchParams.set('event', newEvent ?? '');
-			goto($page.url);
+			goto($page.url, { invalidateAll: true });
 		});
 		return () => {
 			unsubChannel();
@@ -71,7 +71,7 @@
 							</a>
 						</Table.Cell>
 						<Table.Cell>
-							<Badge variant="secondary">#{event.channel}</Badge>
+							#{event.channel}
 						</Table.Cell>
 						<Table.Cell>
 							{#if event.notify}

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Head from '$lib/components/head.svelte';
 	import { page } from '$app/stores';
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
@@ -10,6 +11,8 @@
 	$: error = searchParams.get('error') === 'true';
 	$: success = searchParams.get('success') === 'true';
 </script>
+
+<Head title="Sign In" />
 
 <div class="flex min-h-screen flex-col items-center justify-center">
 	<Card.Root class="w-full max-w-[32rem]">

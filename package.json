@@ -17,7 +17,10 @@
 		"test:unit": "vitest",
 		"db:generate": "drizzle-kit generate:sqlite",
 		"db:push": "drizzle-kit push:sqlite",
-		"db:migrate": "tsx migrate.ts"
+		"db:migrate": "tsx migrate.ts",
+		"docs:dev": "vocs dev",
+		"docs:build": "vocs build",
+		"docs:preview": "vocs preview"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.28.1",
@@ -40,6 +43,7 @@
 		"prettier": "^3.1.1",
 		"prettier-plugin-svelte": "^3.1.2",
 		"prettier-plugin-tailwindcss": "^0.5.9",
+		"sass": "^1.70.0",
 		"svelte": "^4.2.8",
 		"svelte-check": "^3.6.0",
 		"tailwindcss": "^3.3.6",
@@ -51,10 +55,14 @@
 	"type": "module",
 	"dependencies": {
 		"@carbon/charts-svelte": "^1.13.18",
+		"@cartamd/plugin-code": "^3.0.1",
+		"@cartamd/plugin-emoji": "^3.1.0",
+		"@cartamd/plugin-slash": "^3.1.0",
 		"@internationalized/date": "^3.5.1",
 		"@libsql/client": "^0.3.6",
 		"@lucia-auth/adapter-sqlite": "^2.0.1",
 		"bits-ui": "^0.13.0",
+		"carta-md": "^3.5.0",
 		"chart.js": "^4.4.1",
 		"clsx": "^2.1.0",
 		"cmdk-sv": "^0.0.12",
@@ -62,13 +70,13 @@
 		"drizzle-orm": "^0.29.2",
 		"drizzle-zod": "^0.5.1",
 		"formsnap": "^0.4.2",
+		"isomorphic-dompurify": "^2.3.0",
 		"lucia": "^2.7.6",
 		"lucide-svelte": "^0.303.0",
 		"mode-watcher": "^0.1.2",
 		"rambda": "^8.6.0",
 		"sse.js": "^2.2.0",
 		"superjson": "^2.2.1",
-		"svelte-dnd-action": "^0.9.38",
 		"svelte-dnd-list": "^0.1.8",
 		"svelte-highlight": "^7.4.7",
 		"svelte-sonner": "^0.3.11",
@@ -78,6 +86,7 @@
 		"tsx": "^4.7.0",
 		"ua-parser-js": "2.0.0-beta.1",
 		"unique-names-generator": "^4.7.1",
+		"vocs": "^1.0.0-alpha.30",
 		"zod": "^3.22.4"
 	},
 	"overrides": {

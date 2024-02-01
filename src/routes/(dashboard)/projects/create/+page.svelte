@@ -1,9 +1,12 @@
 <script lang="ts">
+	import Head from '$lib/components/head.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 </script>
+
+<Head title="Create Project" />
 
 <div class="flex flex-1 items-center justify-center">
 	<Card.Root class="w-full max-w-[32rem]">

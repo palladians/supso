@@ -6,6 +6,7 @@
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import { goto } from '$app/navigation';
 
 	export let eventDetailsId: Writable<string | null>;
 	export let event: Event;
@@ -17,7 +18,7 @@
 		<Button
 			variant="outline"
 			class="flex h-auto w-full max-w-[24rem] flex-1 flex-col items-start justify-start gap-4 p-4 text-left"
-			on:click={() => eventDetailsId.set(event.id)}
+			on:click={() => goto(`/events/${event.id}`)}
 		>
 			<h2 class="w-full truncate font-semibold">{event.event}</h2>
 			<div class="flex gap-1">

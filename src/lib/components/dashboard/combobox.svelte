@@ -43,7 +43,7 @@
 	<Popover.Content class="w-[200px] p-0">
 		<Command.Root>
 			<Command.Input {placeholder} />
-			<Command.Empty>No framework found.</Command.Empty>
+			<Command.Empty>No option found.</Command.Empty>
 			<Command.Group>
 				{#each options as option}
 					<Command.Item

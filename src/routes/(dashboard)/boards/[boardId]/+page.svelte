@@ -3,7 +3,6 @@
 	import { Button } from '$lib/components/ui/button';
 	import DragDropList, { VerticalDropZone } from 'svelte-dnd-list';
 	import { SettingsIcon } from 'lucide-svelte';
-	import EventDetailsDialog from '$lib/components/dialogs/event-details-dialog.svelte';
 	import DeleteEventAlert from '$lib/components/alerts/delete-event-alert.svelte';
 	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
 	import BoardCard from '$lib/components/dashboard/board-card.svelte';
@@ -123,7 +122,6 @@
 </script>
 
 <div class="flex flex-1 flex-col px-4">
-	<EventDetailsDialog open={eventDetailsId} />
 	<DeleteEventAlert open={deleteEventId} />
 	<PageNavbar
 		title={$board.name}

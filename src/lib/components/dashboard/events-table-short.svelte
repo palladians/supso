@@ -42,7 +42,7 @@
 						#{event.channel}
 					</Badge>
 				</Table.Cell>
-				<Table.Cell class="text-right">{formatDate(event.createdAt ?? '')}</Table.Cell>
+				<Table.Cell class="truncate text-right">{formatDate(event.createdAt ?? '')}</Table.Cell>
 			</Table.Row>
 		{/each}
 	</Table.Body>
