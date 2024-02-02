@@ -20,7 +20,7 @@
 
 	export let data;
 	export const board = writable<BoardWithEvents>(data.board);
-	export const eventsOrder = writable<EventsOrder>(JSON.parse(data.board.eventsOrder));
+	export const eventsOrder = writable<EventsOrder>(JSON.parse(data.board.eventsOrder) ?? {});
 	export const eventDetailsId = writable<string | null>(null);
 	export const deleteEventId = writable<string | null>(null);
 	export const eventsByOption = derived([board, eventsOrder], ([$board, $eventsOrder]) => {
