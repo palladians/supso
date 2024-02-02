@@ -25,7 +25,7 @@
 	export const deleteEventId = writable<string | null>(null);
 	export const eventsByOption = derived([board, eventsOrder], ([$board, $eventsOrder]) => {
 		const newValue = $board.options.map((option: string) => {
-			const laneOrder = uniq($eventsOrder[option]);
+			const laneOrder = uniq($eventsOrder[option] ?? []);
 			const sortedEvents = $board.project.events
 				.filter((event: Event) => {
 					const tags = event.tags as Record<string, any>;
