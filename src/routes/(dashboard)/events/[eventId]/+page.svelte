@@ -34,16 +34,19 @@
 
 	onMount(() => {
 		const unsubAssignee = assigneeId.subscribe(async (newAssigneeId) => {
+			if (!newAssigneeId) return;
 			const formData = new FormData();
 			formData.set('assigneeId', newAssigneeId ?? '');
 			await fetch('?/setAssignee', { body: formData, method: 'POST' });
 		});
 		const unsubDueDate = dueDate.subscribe(async (newDueDate) => {
+			if (!newDueDate) return;
 			const formData = new FormData();
 			formData.set('dueDate', newDueDate ?? '');
 			await fetch('?/setDueDate', { body: formData, method: 'POST' });
 		});
 		const unsubContent = content.subscribe(async (newContent) => {
+			if (newContent.length === 0) return;
 			const formData = new FormData();
 			formData.set('content', newContent);
 			await fetch('?/updateContent', { body: formData, method: 'POST' });
@@ -157,7 +160,7 @@
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each Object.entries(data.event.tags) as [tag, value]}
+						{#each Object.entries(data.event.tags ?? {}) as [tag, value]}
 							<Table.Row>
 								<Table.Cell>{tag}</Table.Cell>
 								<Table.Cell>

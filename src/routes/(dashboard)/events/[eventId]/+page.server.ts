@@ -47,10 +47,13 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		(userToProject) => userToProject.userId === session.user.userId
 	);
 	if (!viewAllowed) return error(404);
-	const tags = Object.keys(event.tags);
-	const boards = await db.query.board.findMany({
-		where: and(eq(boardScheme.projectId, event.projectId), inArray(boardScheme.tag, tags))
-	});
+	const tags = event.tags ? Object.keys(event.tags) : [];
+	const boards =
+		tags.length > 0
+			? await db.query.board.findMany({
+					where: and(eq(boardScheme.projectId, event.projectId), inArray(boardScheme.tag, tags))
+				})
+			: [];
 	const projectMembers = event.project.usersToProjects.map((membership) => ({
 		value: membership.user.id,
 		label: membership.user.username

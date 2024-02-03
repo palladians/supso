@@ -10,7 +10,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const parser = new UAParser(request.headers.get('user-agent'));
 	if (!locals.apiUser) return error(403);
 	const body = await request.json();
-	const eventPayload = insertEventSchema.extend({ notify: z.boolean() }).parse(body);
+	const eventPayload = insertEventSchema.extend({ notify: z.boolean().optional() }).parse(body);
 	const membership = await db.query.usersToProjects.findFirst({
 		where: and(
 			eq(usersToProjects.userId, locals.apiUser.id),

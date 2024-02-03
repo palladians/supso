@@ -29,6 +29,8 @@
 			const sortedEvents = $board.project.events
 				.filter((event: Event) => {
 					const tags = event.tags as Record<string, any>;
+					if (tags?.length === 0) return;
+					if (!tags?.[$board.tag]) return;
 					return tags[$board.tag] === option;
 				})
 				.sort((first: Event, second: Event) => {
