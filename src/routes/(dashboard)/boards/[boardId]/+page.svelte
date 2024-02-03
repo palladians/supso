@@ -86,17 +86,21 @@
 		if (!detail.to || detail.from === detail.to) {
 			return;
 		}
-		const movedItem = $eventsOrder[detail.from.dropZoneID][detail.from.index];
-		const fromColumnWithoutMovedItem = $eventsOrder[detail.from.dropZoneID].filter(
+		const fallback = Object.fromEntries(
+			$eventsByOption.map(([column, events]) => [column, events.map((event) => event.id)])
+		);
+		const currentOrder = Object.keys($eventsOrder).length > 0 ? $eventsOrder : fallback;
+		const movedItem = currentOrder[detail.from.dropZoneID][detail.from.index];
+		const fromColumnWithoutMovedItem = currentOrder[detail.from.dropZoneID].filter(
 			(_, index) => index !== detail.from.index
 		);
-		eventsOrder.set({ ...$eventsOrder, [detail.from.dropZoneID]: fromColumnWithoutMovedItem });
-		const toColumnWithMovedItem = $eventsOrder[detail.to.dropZoneID].toSpliced(
+		eventsOrder.set({ ...currentOrder, [detail.from.dropZoneID]: fromColumnWithoutMovedItem });
+		const toColumnWithMovedItem = currentOrder[detail.to.dropZoneID].toSpliced(
 			detail.to.index,
 			0,
 			movedItem
 		);
-		eventsOrder.set({ ...$eventsOrder, [detail.to.dropZoneID]: toColumnWithMovedItem });
+		eventsOrder.set({ ...currentOrder, [detail.to.dropZoneID]: toColumnWithMovedItem });
 		optimisticCardUpdate({ eventId: movedItem, newTagValue: detail.to.dropZoneID });
 		await updateEventsOrder();
 		await updateEventTag({ eventId: movedItem, value: detail.to.dropZoneID });
