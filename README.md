@@ -1,38 +1,40 @@
-# create-svelte
+![Logo](https://supso.co/logo.svg)
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+# Supso
 
-## Creating a project
+Real-time digital product observability suite.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Installation
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install my-project with npm
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+  npm install
+  cp .env.example .env # And adjust the variables
+  npm run dev
 ```
 
-## Building
+## Features
 
-To create a production version of your app:
+- Real-time events tracking
+- Organize events into kanban boards
+- Feature flags management
+- Webhooks (coming soon)
+- TypeScript SDK (in progress)
 
-```bash
-npm run build
-```
+## Tech Stack
 
-You can preview the production build with `npm run preview`.
+- TypeScript
+- SvelteKit
+- Drizzle ORM
+- SQLite (or Turso)
+- Tailwind
+- Svelte shadcn/ui port
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Links
+
+[Website](https://supso.co/)
+
+[App](https://app.supso.co/)
+
+[Documentation](https://supso.co/docs)

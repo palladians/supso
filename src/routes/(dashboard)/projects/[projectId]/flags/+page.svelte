@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
+	import EmptyState from '$lib/components/dashboard/empty-state.svelte';
 	import * as Card from '$lib/components/ui/card';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { Button } from '$lib/components/ui/button';
@@ -29,47 +30,56 @@
 			</Button>
 		</PageNavbar>
 		<Card.Root class="flex-1 p-6">
-			<Accordion.Root>
-				{#each data.featureFlags as featureFlag}
-					<Accordion.Item value={featureFlag.id}>
-						<Accordion.Trigger>
-							<div class="flex gap-2">
-								<Badge variant={featureFlag.enabled === 'true' ? 'default' : 'secondary'}
-									>{featureFlag.enabled === 'true' ? 'On' : 'Off'}</Badge
-								>
-								<span>{featureFlag.name}</span>
-							</div>
-						</Accordion.Trigger>
-						<Accordion.Content>
-							<div class="flex flex-col gap-2">
-								{#if featureFlag.description}
-									<p>
-										{featureFlag.description}
-									</p>
-								{/if}
-								<div class="flex items-center justify-between">
-									<div class="flex items-center gap-4">
-										<Button
-											href={`/projects/${$page.params.projectId}/flags/${featureFlag.id}`}
-											variant="link"
-											class="p-0">Edit</Button
-										>
-										<Button
-											variant="link"
-											class="p-0"
-											on:click={() => deleteFlagAlertId.set(featureFlag.id)}>Delete</Button
-										>
-									</div>
-									<form method="POST" action="?/toggleFlag">
-										<input type="hidden" name="flagId" value={featureFlag.id} />
-										<Switch type="submit" checked={featureFlag.enabled === 'true'} />
-									</form>
+			{#if data.featureFlags.length === 0}
+				<EmptyState
+					title="Create a feature flag"
+					description="Feature management helps to maximize the value of every digital product."
+					buttonHref={`/projects/${$page.params.projectId}/flags/create`}
+					buttonLabel="Create Feature Flag"
+				/>
+			{:else}
+				<Accordion.Root>
+					{#each data.featureFlags as featureFlag}
+						<Accordion.Item value={featureFlag.id}>
+							<Accordion.Trigger>
+								<div class="flex gap-2">
+									<Badge variant={featureFlag.enabled === 'true' ? 'default' : 'secondary'}
+										>{featureFlag.enabled === 'true' ? 'On' : 'Off'}</Badge
+									>
+									<span>{featureFlag.name}</span>
 								</div>
-							</div>
-						</Accordion.Content>
-					</Accordion.Item>
-				{/each}
-			</Accordion.Root>
+							</Accordion.Trigger>
+							<Accordion.Content>
+								<div class="flex flex-col gap-2">
+									{#if featureFlag.description}
+										<p>
+											{featureFlag.description}
+										</p>
+									{/if}
+									<div class="flex items-center justify-between">
+										<div class="flex items-center gap-4">
+											<Button
+												href={`/projects/${$page.params.projectId}/flags/${featureFlag.id}`}
+												variant="link"
+												class="p-0">Edit</Button
+											>
+											<Button
+												variant="link"
+												class="p-0"
+												on:click={() => deleteFlagAlertId.set(featureFlag.id)}>Delete</Button
+											>
+										</div>
+										<form method="POST" action="?/toggleFlag">
+											<input type="hidden" name="flagId" value={featureFlag.id} />
+											<Switch type="submit" checked={featureFlag.enabled === 'true'} />
+										</form>
+									</div>
+								</div>
+							</Accordion.Content>
+						</Accordion.Item>
+					{/each}
+				</Accordion.Root>
+			{/if}
 		</Card.Root>
 	</div>
 </div>
