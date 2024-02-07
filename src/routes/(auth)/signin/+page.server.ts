@@ -21,7 +21,7 @@ const ensureUser = async ({ email }: { email: string }) => {
 				})
 			})
 			.returning();
-		await tx.insert(accessToken).values({ name: 'Default', userId: newUser.id });
+		await tx.insert(accessToken).values({ name: 'Default', userId: newUser.id, internal: 'true' });
 		return newUser;
 	});
 	return newUser;

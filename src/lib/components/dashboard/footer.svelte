@@ -1,7 +1,7 @@
 <div class="flex justify-end gap-4 p-2">
-	<a class="text-sm text-muted-foreground">&copy; Supso</a>
-	<a class="text-sm text-muted-foreground">Playground</a>
-	<a class="text-sm text-muted-foreground">Docs</a>
-	<a class="text-sm text-muted-foreground">Privacy Policy</a>
-	<a class="text-sm text-muted-foreground">Terms of Service</a>
+	<a href="https://supso.co" class="text-muted-foreground text-sm">&copy; Supso</a>
+	<a href="/playground" class="text-muted-foreground text-sm">Playground</a>
+	<a href="https://supso.co/docs" class="text-muted-foreground text-sm">Docs</a>
+	<a class="text-muted-foreground text-sm">Privacy Policy</a>
+	<a class="text-muted-foreground text-sm">Terms of Service</a>
 </div>

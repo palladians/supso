@@ -49,7 +49,8 @@ export const actions: Actions = {
 		const tokenName = formData.get('name')?.toString() ?? '';
 		await db.insert(accessToken).values({
 			name: tokenName,
-			userId: session.user.userId
+			userId: session.user.userId,
+			internal: 'false'
 		});
 		return redirect(302, '/profile');
 	},

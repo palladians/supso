@@ -76,6 +76,7 @@ export const accessToken = sqliteTable('access_token', {
 		.primaryKey()
 		.notNull()
 		.$defaultFn(() => crypto.randomUUID()),
+	internal: numeric('internal').default('true'),
 	name: text('name').notNull(),
 	userId: text('user_id')
 		.notNull()
