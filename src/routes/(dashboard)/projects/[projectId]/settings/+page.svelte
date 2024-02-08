@@ -2,17 +2,20 @@
 	import * as Card from '$lib/components/ui/card';
 	import * as Select from '$lib/components/ui/select';
 	import * as Avatar from '$lib/components/ui/avatar';
+	import * as Table from '$lib/components/ui/table';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Input } from '$lib/components/ui/input';
 	import { Button } from '$lib/components/ui/button';
-	import { ChevronLeftIcon, XIcon, PlusIcon } from 'lucide-svelte';
+	import { ChevronLeftIcon, XIcon, PlusIcon, EyeIcon } from 'lucide-svelte';
 	import { page } from '$app/stores';
 	import { writable } from 'svelte/store';
 	import InviteMemberDialog from '$lib/components/dialogs/invite-member-dialog.svelte';
+	import AddWebhookDialog from '$lib/components/dialogs/add-webhook-dialog.svelte';
 	import RemoveMemberAlert from '$lib/components/alerts/remove-member-alert.svelte';
 	import DeleteProjectAlert from '$lib/components/alerts/delete-project-alert.svelte';
 	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
+	import DeleteWebhookAlert from '$lib/components/alerts/delete-webhook-alert.svelte';
 
 	export const roles = [
 		{ value: 'member', label: 'Member' },
@@ -23,14 +26,18 @@
 	$: currentOwner = data.membersOptions.find((member) => member.value === data.project.ownerId);
 	$: isOwner = data.user.id === data.project.ownerId;
 	export const inviteMemberDialogOpen = writable<boolean>(false);
+	export const addWebhookDialogOpen = writable<boolean>(false);
 	export const removeMemberAlertId = writable<string | null>(null);
 	export const deleteProjectAlertId = writable<string | null>(null);
+	export const deleteWebhookAlertId = writable<string | null>(null);
 </script>
 
 <div class="container flex flex-1 flex-col">
 	<InviteMemberDialog open={inviteMemberDialogOpen} />
 	<RemoveMemberAlert open={removeMemberAlertId} />
 	<DeleteProjectAlert open={deleteProjectAlertId} />
+	<AddWebhookDialog open={addWebhookDialogOpen} />
+	<DeleteWebhookAlert open={deleteWebhookAlertId} />
 	<PageNavbar title="Project Settings" />
 	<Card.Root class="grid flex-1 grid-cols-[1fr_2fr] gap-12 p-6">
 		<h2 class="font-semibold">Project</h2>
@@ -129,6 +136,59 @@
 					{/if}
 				</Card.Root>
 			{/each}
+		</div>
+		<Separator class="col-span-2" />
+		<h2 class="font-semibold">Webhooks</h2>
+		<div class="flex flex-col gap-4">
+			<Table.Root>
+				<Table.Header>
+					<Table.Row>
+						<Table.Head>Service</Table.Head>
+						<Table.Head>URL</Table.Head>
+						<Table.Head class="text-right">Actions</Table.Head>
+					</Table.Row>
+				</Table.Header>
+				<Table.Body>
+					{#each data.webhooks as webhook}
+						<Table.Row>
+							<Table.Cell class="font-medium">{webhook.service}</Table.Cell>
+							<Table.Cell class="w-[20rem]">
+								{#if webhook?.visible}
+									<div class="max-w-[32rem] break-all">{webhook.url}</div>
+								{:else}
+									<Button
+										variant="secondary"
+										on:click={() => {
+											webhook.visible = true;
+										}}
+										class="gap-1"
+									>
+										<EyeIcon size={16} />
+										<span>Reveal</span>
+									</Button>
+								{/if}
+							</Table.Cell>
+							<Table.Cell class="flex justify-end gap-2">
+								<Button
+									size="icon"
+									variant="secondary"
+									on:click={() => deleteWebhookAlertId.set(webhook.id)}
+								>
+									<XIcon size={16} />
+								</Button>
+							</Table.Cell>
+						</Table.Row>
+					{/each}
+				</Table.Body>
+			</Table.Root>
+			<Button
+				variant="secondary"
+				class="gap-1 self-end"
+				on:click={() => addWebhookDialogOpen.set(true)}
+			>
+				<PlusIcon size={16} />
+				Add Webhook
+			</Button>
 		</div>
 		<Separator class="col-span-2" />
 		<h2 class="font-semibold">Danger Zone</h2>

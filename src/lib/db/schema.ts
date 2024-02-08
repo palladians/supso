@@ -152,12 +152,26 @@ export const projectInvitation = sqliteTable(
 			.references(() => user.id),
 		projectId: text('project_id')
 			.notNull()
-			.references(() => project.id)
+			.references(() => project.id, { onDelete: 'cascade' })
 	},
 	(t) => ({
 		userProjectUnique: unique().on(t.userId, t.projectId)
 	})
 );
+
+export const webhook = sqliteTable('webhook', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	projectId: text('project_id')
+		.notNull()
+		.references(() => project.id, { onDelete: 'cascade' }),
+	url: text('url').notNull(),
+	service: text('service', { enum: ['slack', 'discord'] }).notNull(),
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
+});
 
 export const usersRelations = relations(user, ({ many }) => ({
 	usersToProjects: many(usersToProjects),
@@ -171,7 +185,8 @@ export const projectsRelations = relations(project, ({ many }) => ({
 	events: many(event),
 	boards: many(board),
 	featureFlags: many(featureFlag),
-	projectInvitations: many(projectInvitation)
+	projectInvitations: many(projectInvitation),
+	webhooks: many(webhook)
 }));
 
 export const accessTokenRelations = relations(accessToken, ({ one }) => ({
@@ -188,6 +203,13 @@ export const projectInvitationRelations = relations(projectInvitation, ({ one })
 	}),
 	project: one(project, {
 		fields: [projectInvitation.projectId],
+		references: [project.id]
+	})
+}));
+
+export const webhookRelations = relations(webhook, ({ one }) => ({
+	project: one(project, {
+		fields: [webhook.projectId],
 		references: [project.id]
 	})
 }));

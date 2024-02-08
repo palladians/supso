@@ -5,7 +5,8 @@ import {
 	projectInvitation,
 	project as projectScheme,
 	user as userScheme,
-	usersToProjects
+	usersToProjects,
+	webhook
 } from '$lib/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 
@@ -133,6 +134,49 @@ export const actions: Actions = {
 		const projectId = formData.get('projectId')?.toString() ?? '';
 		await db.delete(projectScheme).where(eq(projectScheme.id, projectId));
 		redirect(302, '/projects');
+	},
+	deleteWebhook: async ({ request, params, locals }) => {
+		const session = await locals.auth.validate();
+		const formData = await request.formData();
+		const admin = await db.query.usersToProjects.findFirst({
+			where: and(
+				eq(usersToProjects.projectId, params.projectId),
+				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.role, 'admin')
+			),
+			with: {
+				project: {
+					with: {
+						webhooks: true
+					}
+				}
+			}
+		});
+		if (!admin) return error(401);
+		const webhookId = formData.get('id')?.toString() ?? '';
+		if (!admin.project.webhooks.some((webhook) => webhook.id === webhookId)) return error(404);
+		await db.delete(webhook).where(eq(webhook.id, webhookId));
+		redirect(302, `/projects/${params.projectId}/settings`);
+	},
+	addWebhook: async ({ request, params, locals }) => {
+		const session = await locals.auth.validate();
+		const formData = await request.formData();
+		const admin = await db.query.usersToProjects.findFirst({
+			where: and(
+				eq(usersToProjects.projectId, params.projectId),
+				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.role, 'admin')
+			)
+		});
+		if (!admin) return error(401);
+		const service = formData.get('service')?.toString() ?? '';
+		const url = formData.get('url')?.toString() ?? '';
+		await db.insert(webhook).values({
+			projectId: params.projectId,
+			service,
+			url
+		});
+		redirect(302, `/projects/${params.projectId}/settings`);
 	}
 };
 
@@ -148,7 +192,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 			project: {
 				with: {
 					usersToProjects: { with: { user: true } },
-					projectInvitations: { with: { user: true } }
+					projectInvitations: { with: { user: true } },
+					webhooks: true
 				}
 			}
 		}
@@ -164,6 +209,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		project: membership.project,
 		members: membership.project.usersToProjects,
 		membersOptions,
-		projectInvitations: membership.project.projectInvitations
+		projectInvitations: membership.project.projectInvitations,
+		webhooks: membership.project.webhooks
 	};
 };

@@ -5,10 +5,11 @@
 	import { Label } from '$lib/components/ui/label';
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
-	import { XIcon, PlusIcon, CheckIcon, CopyIcon } from 'lucide-svelte';
+	import { XIcon, PlusIcon, CheckIcon, CopyIcon, EyeIcon } from 'lucide-svelte';
 	import CreateTokenDialog from '$lib/components/dialogs/create-token-dialog.svelte';
 	import DeleteTokenAlert from '$lib/components/alerts/delete-token-alert.svelte';
 	import { writable } from 'svelte/store';
+	import { toast } from 'svelte-sonner';
 
 	export let data;
 	export let username: string;
@@ -78,12 +79,30 @@
 					{#each data.accessTokens as token}
 						<Table.Row>
 							<Table.Cell class="font-medium">{token.name}</Table.Cell>
-							<Table.Cell class="w-[20rem]">{token.id}</Table.Cell>
+							<Table.Cell class="w-[20rem]">
+								{#if token?.visible}
+									<span>{token.id}</span>
+								{:else}
+									<Button
+										variant="secondary"
+										on:click={() => {
+											token.visible = true;
+										}}
+										class="gap-1"
+									>
+										<EyeIcon size={16} />
+										<span>Reveal</span>
+									</Button>
+								{/if}
+							</Table.Cell>
 							<Table.Cell class="flex justify-end gap-2">
 								<Button
 									size="icon"
 									variant="secondary"
-									on:click={() => deleteTokenAlertId.set(token.id)}
+									on:click={() => {
+										toast('The access token was copied.');
+										navigator.clipboard.writeText(token.id);
+									}}
 								>
 									<CopyIcon size={16} />
 								</Button>
