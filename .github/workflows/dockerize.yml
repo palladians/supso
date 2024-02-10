@@ -1,0 +1,17 @@
+name: Dockerize latest version
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+jobs:
+  dockerize_and_push:
+    name: 'Build and test'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nixpacks
+        run: |
+          curl -LO https://github.com/railwayapp/nixpacks/releases/download/v1.21.1/nixpacks-v1.21.1-amd64.deb
+          sudo dpkg -i nixpacks-v1.21.1-amd64.deb
+      - name: Build image
+        run: nixpacks build .
