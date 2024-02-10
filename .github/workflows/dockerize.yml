@@ -13,5 +13,7 @@ jobs:
         run: |
           curl -LO https://github.com/railwayapp/nixpacks/releases/download/v1.21.1/nixpacks-v1.21.1-amd64.deb
           sudo dpkg -i nixpacks-v1.21.1-amd64.deb
+      - name: Copy .env
+        run: cp .env.example .env
       - name: Build image
         run: nixpacks build .
