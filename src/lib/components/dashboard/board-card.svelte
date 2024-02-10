@@ -1,14 +1,11 @@
 <script lang="ts">
-	import type { Writable } from 'svelte/store';
 	import type { Event } from '$lib/db/schema';
 	import { formatDateShort } from '$lib/format/date';
-	import * as Card from '$lib/components/ui/card';
 	import * as ContextMenu from '$lib/components/ui/context-menu';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { goto } from '$app/navigation';
 
-	export let eventDetailsId: Writable<string | null>;
 	export let event: Event;
 	export let onDelete: () => void;
 </script>

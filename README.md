@@ -6,12 +6,10 @@ Real-time digital product observability suite.
 
 ## Installation
 
-Install my-project with npm
-
 ```bash
-  npm install
+  bun install
   cp .env.example .env # And adjust the variables
-  npm run dev
+  bun run dev
 ```
 
 ## Features
