@@ -18,7 +18,7 @@ jobs:
       - name: Copy .env
         run: cp .env.example .env
       - name: Build image
-        run: nixpacks build . --platform linux/arm64
+        run: nixpacks build .
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
