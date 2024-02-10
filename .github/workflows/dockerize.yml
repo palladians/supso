@@ -17,3 +17,11 @@ jobs:
         run: cp .env.example .env
       - name: Build image
         run: nixpacks build .
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push to GHCR
+        run: docker push ghcr.io/palladians/supso:$(docker images | awk '{print $1}' | awk 'NR==2')
