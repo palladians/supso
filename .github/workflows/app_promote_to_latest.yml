@@ -16,6 +16,4 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Tag image
-        run: docker tag ghcr.io/palladians/supso:$(git rev-parse --short HEAD) ghcr.io/palladians/supso:latest
-      - name: Push to GHCR
-        run: docker push ghcr.io/palladians/supso:latest
+        run: docker buildx imagetools create ghcr.io/palladians/supso:$(git rev-parse --short HEAD) --tag ghcr.io/palladians/supso:latest
