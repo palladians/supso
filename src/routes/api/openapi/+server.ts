@@ -14,5 +14,5 @@ const options = {
 
 export const GET: RequestHandler = async () => {
 	const openapiSpecification = swaggerJsdoc(options);
-	return Response.json(openapiSpecification);
+	return Response.json(openapiSpecification, { headers: { 'Access-Control-Allow-Origin': '*' } });
 };
