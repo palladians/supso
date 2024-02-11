@@ -6,8 +6,8 @@ import { usersToProjects } from '$lib/db/schema';
 import { Feed } from 'feed';
 import { PUBLIC_APP_URL } from '$env/static/public';
 
-export const GET: RequestHandler = async ({ locals, request }) => {
-	const projectId = request.params;
+export const GET: RequestHandler = async ({ locals, params }) => {
+	const { projectId } = params;
 	const user = locals.apiUser;
 	if (!user) return error(400, 'Unauthorized');
 	const memberships = await db.query.usersToProjects.findMany({

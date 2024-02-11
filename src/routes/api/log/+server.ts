@@ -8,6 +8,21 @@ import { z } from 'zod';
 import { PUBLIC_APP_URL } from '$env/static/public';
 import { formatDate } from '$lib/format/date';
 
+/**
+ * @openapi
+ * /api/log:
+ *   post:
+ *     description: Logs an event and sends the webhooks.
+ *     requestBody:
+ *        required: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *     responses:
+ *       200:
+ *         description: Returns the newly created event object.
+ */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const parser = new UAParser(request.headers.get('user-agent'));
 	if (!locals.apiUser) return error(403);
