@@ -2,6 +2,8 @@
 
 # Supso
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/yrOOdm?referralCode=l5m5wo)
+
 Real-time digital product observability suite.
 
 ## Installation
