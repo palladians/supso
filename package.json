@@ -6,7 +6,7 @@
 		"dev": "bunx vite dev",
 		"build": "bunx vite build",
 		"preview": "bunx vite preview",
-		"start": "node build/index.js",
+		"start": "bun run db:migrate && node build/index.js",
 		"postinstall": "bun run db:migrate",
 		"test": "bun run test:integration && bun run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
