@@ -3,7 +3,7 @@ import { accessToken, user, verificationCode } from '$lib/db/schema';
 import { eq } from 'drizzle-orm';
 import type { Actions } from './$types';
 import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { SECRET_PLUNK_API_KEY } from '$env/static/private';
 import { PUBLIC_APP_URL } from '$env/static/public';
@@ -58,7 +58,7 @@ export const actions: Actions = {
 			})
 		});
 		const response = (await emailRequest.json()) as { success: boolean };
-		if (!response.success) return redirect(302, '/signin?error=true');
+		if (!response.success) return error(500, 'Bad Plunk request');
 		return redirect(302, '/signin?success=true');
 	}
 };
