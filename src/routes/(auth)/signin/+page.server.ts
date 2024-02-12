@@ -57,7 +57,9 @@ export const actions: Actions = {
 				body: `Sign in: ${PUBLIC_APP_URL}/verify?token=${code.id}`
 			})
 		});
+		console.log(emailRequest);
 		const response = (await emailRequest.json()) as { success: boolean };
+		console.log('>>>EMAIL_RESPONSE', response);
 		if (!response.success) return error(500, 'Bad Plunk request');
 		return redirect(302, '/signin?success=true');
 	}
