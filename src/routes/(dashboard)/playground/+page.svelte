@@ -10,7 +10,7 @@
 	import { codeToHtml } from 'shiki';
 	import dedent from 'dedent';
 	import { derived, writable } from 'svelte/store';
-	import { PUBLIC_APP_URL } from '$env/static/public';
+	import { env as envPublic } from '$env/dynamic/public';
 	import { CopyIcon, InfoIcon, ArrowUpRightIcon } from 'lucide-svelte';
 
 	export let data;
@@ -50,7 +50,7 @@
 	);
 
 	export const execute = async () => {
-		await fetch(PUBLIC_APP_URL + '/api/log', {
+		await fetch(envPublic.PUBLICA_APP_URL + '/api/log', {
 			method: 'POST',
 			body: JSON.stringify({
 				projectId: $projectId,

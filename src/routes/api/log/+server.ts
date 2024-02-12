@@ -5,7 +5,7 @@ import { insertEventSchema, usersToProjects, event as eventScheme } from '$lib/d
 import { error } from '@sveltejs/kit';
 import { UAParser } from 'ua-parser-js';
 import { z } from 'zod';
-import { PUBLIC_APP_URL } from '$env/static/public';
+import { env as envPublic } from '$env/dynamic/public';
 import { formatDate } from '$lib/format/date';
 
 /**
@@ -57,17 +57,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					embeds: [
 						{
 							title: `${result.emoji ? result.emoji + ' ' : ''}${result.event}`,
-							url: PUBLIC_APP_URL + `/events/${result.id}`,
+							url: envPublic.PUBLIC_APP_URL + `/events/${result.id}`,
 							color: null,
 							fields: [
 								{
 									name: 'Project',
-									value: `[${project.name}](${PUBLIC_APP_URL + `/projects/${project.id}`})`
+									value: `[${project.name}](${
+										envPublic.PUBLIC_APP_URL + `/projects/${project.id}`
+									})`
 								},
 								{
 									name: 'Channel',
 									value: `[#${result.channel}](${
-										PUBLIC_APP_URL + `/projects/${project.id}/events?channel=${result.channel}`
+										envPublic.PUBLIC_APP_URL +
+										`/projects/${project.id}/events?channel=${result.channel}`
 									})`
 								},
 								{

@@ -4,7 +4,7 @@ import { db } from '$lib/db';
 import { and, eq } from 'drizzle-orm';
 import { usersToProjects } from '$lib/db/schema';
 import { Feed } from 'feed';
-import { PUBLIC_APP_URL } from '$env/static/public';
+import { env as envPublic } from '$env/dynamic/public';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const { projectId } = params;
@@ -38,7 +38,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 			description: `${project.name}: ${event.event} in ${event.channel}`,
 			content: event.content ?? '',
 			date: new Date(parseInt(event.createdAt ?? '')),
-			link: PUBLIC_APP_URL + '/events/' + event.id
+			link: envPublic.PUBLIC_APP_URL + '/events/' + event.id
 		});
 	});
 	return new Response(feed.rss2(), { headers: { 'Content-Type': 'text/xml' } });

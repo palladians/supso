@@ -5,8 +5,8 @@ import type { Actions } from './$types';
 import { adjectives, animals, colors, uniqueNamesGenerator } from 'unique-names-generator';
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { SECRET_PLUNK_API_KEY } from '$env/static/private';
-import { PUBLIC_APP_URL } from '$env/static/public';
+import { env as envPrivate } from '$env/dynamic/private';
+import { env as envPublic } from '$env/dynamic/public';
 
 const ensureUser = async ({ email }: { email: string }) => {
 	const existingUser = await db.query.user.findFirst({ where: eq(user.email, email) });
@@ -49,12 +49,12 @@ export const actions: Actions = {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${SECRET_PLUNK_API_KEY}`
+				Authorization: `Bearer ${envPrivate.SECRET_PLUNK_API_KEY}`
 			},
 			body: JSON.stringify({
 				to: email,
 				subject: 'Sign in to Supso',
-				body: `Sign in: ${PUBLIC_APP_URL}/verify?token=${code.id}`
+				body: `Sign in: ${envPublic.PUBLIC_APP_URL}/verify?token=${code.id}`
 			})
 		});
 		console.log(emailRequest);
