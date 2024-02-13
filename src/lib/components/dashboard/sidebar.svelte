@@ -15,8 +15,9 @@
 	import { sidebar } from '$lib/stores/sidebar';
 	import { page } from '$app/stores';
 	import { cn } from '$lib/utils';
+	import { browser } from '$app/environment';
 
-	export const isActive = (pathname: string) => $page.url.pathname === pathname;
+	export const isActive = (pathname: string) => browser && $page.url.pathname === pathname;
 </script>
 
 <div

@@ -1,7 +1,9 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { sqliteTable, text, blob, integer, numeric, unique } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, numeric, unique } from 'drizzle-orm/sqlite-core';
 import type { z } from 'zod';
 import { relations } from 'drizzle-orm';
+import { TimeSpan, createDate } from 'oslo';
+import { generateRandomString, alphabet } from 'oslo/crypto';
 
 export const user = sqliteTable('user', {
 	id: text('id')
@@ -14,25 +16,12 @@ export const user = sqliteTable('user', {
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
-export const userSession = sqliteTable('user_session', {
-	id: text('id').primaryKey(),
+export const session = sqliteTable('session', {
+	id: text('id').notNull().primaryKey(),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	activeExpires: blob('active_expires', {
-		mode: 'bigint'
-	}).notNull(),
-	idleExpires: blob('idle_expires', {
-		mode: 'bigint'
-	}).notNull()
-});
-
-export const userKey = sqliteTable('user_key', {
-	id: text('id').primaryKey(),
-	userId: text('user_id')
-		.notNull()
-		.references(() => user.id),
-	hashedPassword: text('hashed_password')
+	expiresAt: integer('expires_at').notNull()
 });
 
 export const verificationCode = sqliteTable('verification_code', {
@@ -40,10 +29,17 @@ export const verificationCode = sqliteTable('verification_code', {
 		.primaryKey()
 		.notNull()
 		.$defaultFn(() => crypto.randomUUID()),
-	expires: integer('expires'),
+	code: text('code')
+		.notNull()
+		.$defaultFn(() => generateRandomString(8, alphabet('0-9'))),
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id)
+		.unique(),
+	email: text('email').notNull(),
+	expiresAt: integer('expires_at')
+		.notNull()
+		.$defaultFn(() => createDate(new TimeSpan(5, 'm')).getTime())
 });
 
 export const project = sqliteTable('project', {

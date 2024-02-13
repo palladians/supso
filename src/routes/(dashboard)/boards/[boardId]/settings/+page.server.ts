@@ -7,7 +7,6 @@ import { error, redirect } from '@sveltejs/kit';
 export const actions: Actions = {
 	updateBoard: async ({ request, locals, params }) => {
 		const { boardId } = params;
-		const session = await locals.auth.validate();
 		const board = await db.query.board.findFirst({
 			where: eq(boardScheme.id, boardId),
 			with: {
@@ -20,7 +19,7 @@ export const actions: Actions = {
 		});
 		if (!board) return error(404);
 		const permitted = board.project.usersToProjects.some(
-			(userToProject) => userToProject.userId === session.user.userId
+			(userToProject) => userToProject.userId === locals.user?.id
 		);
 		if (!permitted) return error(400);
 		const formData = await request.formData();
@@ -41,7 +40,6 @@ export const actions: Actions = {
 	},
 	deleteBoard: async ({ request, locals, params }) => {
 		const { boardId } = params;
-		const session = await locals.auth.validate();
 		const board = await db.query.board.findFirst({
 			where: eq(boardScheme.id, boardId),
 			with: {
@@ -54,7 +52,7 @@ export const actions: Actions = {
 		});
 		if (!board) return error(404);
 		const permitted = board.project.usersToProjects.some(
-			(userToProject) => userToProject.userId === session.user.userId
+			(userToProject) => userToProject.userId === locals.user?.id
 		);
 		if (!permitted) return error(400);
 		const formData = await request.formData();
@@ -65,14 +63,13 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const session = await locals.auth.validate();
 	const board = await db.query.board.findFirst({
 		where: eq(boardScheme.id, params.boardId),
 		with: { project: { with: { usersToProjects: true, events: true } } }
 	});
 	if (!board) return error(400);
 	const viewAllowed = board.project?.usersToProjects.some(
-		(userToProject) => userToProject.userId === session.user.userId
+		(userToProject) => userToProject.userId === locals.user?.id
 	);
 	if (!viewAllowed) return error(404);
 	return { board };

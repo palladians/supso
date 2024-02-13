@@ -6,9 +6,10 @@ import { error } from '@sveltejs/kit';
 import { take } from 'rambda';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.auth.validate();
+	const userId = locals.user?.id;
+	if (!userId) error(400);
 	const memberships = await db.query.usersToProjects.findMany({
-		where: and(eq(usersToProjects.userId, session.user.userId)),
+		where: and(eq(usersToProjects.userId, userId)),
 		with: {
 			project: {
 				with: {

@@ -9,13 +9,13 @@ const PAGE_SIZE = 10;
 
 const fetchEvents = async ({
 	params,
-	session,
+	userId,
 	lastCursor,
 	channel,
 	event
 }: {
 	params: RouteParams;
-	session: any;
+	userId: string;
 	lastCursor: string | null;
 	channel: string | null;
 	event: string | null;
@@ -26,7 +26,7 @@ const fetchEvents = async ({
 	});
 	if (!currentProject) return error(400, 'Project not found');
 	const membershipExists = currentProject.usersToProjects.some(
-		(userToProject) => userToProject.userId === session.user.userId
+		(userToProject) => userToProject.userId === userId
 	);
 	if (!membershipExists) return error(400, 'Unauthorized.');
 	return db.query.event.findMany({
@@ -42,12 +42,13 @@ const fetchEvents = async ({
 };
 
 export const load: PageServerLoad = async ({ locals, params, url, parent }) => {
+	const userId = locals.user?.id;
+	if (!userId) error(400);
 	const parentData = await parent();
 	const lastCursor = url.searchParams.get('last_cursor');
 	const channel = url.searchParams.get('channel');
 	const event = url.searchParams.get('event');
-	const session = await locals.auth.validate();
-	const events = await fetchEvents({ session, params, lastCursor, channel, event });
+	const events = await fetchEvents({ userId, params, lastCursor, channel, event });
 	const channels = uniq(events.map((event) => event.channel));
 	const eventNames = uniq(events.map((event) => event.event));
 	const pages = Math.floor(events.length / PAGE_SIZE);

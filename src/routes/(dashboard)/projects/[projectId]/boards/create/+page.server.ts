@@ -6,13 +6,11 @@ import { and, eq } from 'drizzle-orm';
 
 export const actions: Actions = {
 	default: async ({ request, locals, params }) => {
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const { projectId } = params;
-		const session = await locals.auth.validate();
 		const membership = await db.query.usersToProjects.findFirst({
-			where: and(
-				eq(usersToProjects.userId, session.user.userId),
-				eq(usersToProjects.projectId, projectId)
-			)
+			where: and(eq(usersToProjects.userId, userId), eq(usersToProjects.projectId, projectId))
 		});
 		if (!membership) return error(400);
 		const formData = await request.formData();

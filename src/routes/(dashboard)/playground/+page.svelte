@@ -50,7 +50,7 @@
 	);
 
 	export const execute = async () => {
-		await fetch(envPublic.PUBLICA_APP_URL + '/api/log', {
+		await fetch(envPublic.PUBLIC_APP_URL + '/api/log', {
 			method: 'POST',
 			body: JSON.stringify({
 				projectId: $projectId,

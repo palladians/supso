@@ -37,14 +37,13 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const session = await locals.auth.validate();
 	const event = await db.query.event.findFirst({
 		where: eq(eventScheme.id, params.eventId),
 		with: { project: { with: { usersToProjects: { with: { user: true } } } } }
 	});
 	if (!event) return error(400);
 	const viewAllowed = event.project?.usersToProjects.some(
-		(userToProject) => userToProject.userId === session.user.userId
+		(userToProject) => userToProject.userId === locals.user?.id
 	);
 	if (!viewAllowed) return error(404);
 	const tags = event.tags ? Object.keys(event.tags) : [];

@@ -28,8 +28,7 @@ const ensureUser = async ({ email }: { email: string }) => {
 };
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.auth.validate();
-	if (session) throw redirect(302, '/projects');
+	if (locals.session) throw redirect(302, '/projects');
 };
 
 export const actions: Actions = {
@@ -41,8 +40,8 @@ export const actions: Actions = {
 		const [code] = await db
 			.insert(verificationCode)
 			.values({
-				userId: existingUser.id,
-				expires: Date.now() + 1000 * 60 * 5
+				email: existingUser.email,
+				userId: existingUser.id
 			})
 			.returning();
 		const emailRequest = await fetch('https://api.useplunk.com/v1/send', {
@@ -54,13 +53,11 @@ export const actions: Actions = {
 			body: JSON.stringify({
 				to: email,
 				subject: 'Sign in to Supso',
-				body: `Sign in: ${envPublic.PUBLIC_APP_URL}/verify?token=${code.id}`
+				body: `Verification code: ${code.code}`
 			})
 		});
-		console.log(emailRequest);
 		const response = (await emailRequest.json()) as { success: boolean };
-		console.log('>>>EMAIL_RESPONSE', response);
 		if (!response.success) return error(500, 'Bad Plunk request');
-		return redirect(302, '/signin?success=true');
+		return redirect(302, `/verify?uid=${code.userId}`);
 	}
 };

@@ -12,14 +12,15 @@ import { error, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	updateProject: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const name = formData.get('name')?.toString() ?? '';
 		const ownerId = formData.get('ownerId')?.toString() ?? '';
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
@@ -35,13 +36,14 @@ export const actions: Actions = {
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	inviteMember: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const email = formData.get('email')?.toString() ?? '';
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
@@ -64,12 +66,13 @@ export const actions: Actions = {
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	deleteInvitation: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
@@ -79,36 +82,41 @@ export const actions: Actions = {
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	removeMember: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
 		if (!admin) error(401);
-		const userId = formData.get('userId')?.toString() ?? '';
+		const removalUserId = formData.get('userId')?.toString() ?? '';
 		await db
 			.delete(usersToProjects)
 			.where(
-				and(eq(usersToProjects.userId, userId), eq(usersToProjects.projectId, params.projectId))
+				and(
+					eq(usersToProjects.userId, removalUserId),
+					eq(usersToProjects.projectId, params.projectId)
+				)
 			);
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	updateRole: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
 		if (!admin) error(401);
-		const userId = formData.get('userId')?.toString() ?? '';
+		const updateUserId = formData.get('userId')?.toString() ?? '';
 		const role = formData.get('role')?.toString() ?? 'member';
 		await db
 			.update(usersToProjects)
@@ -116,17 +124,21 @@ export const actions: Actions = {
 				role: role as never
 			})
 			.where(
-				and(eq(usersToProjects.userId, userId), eq(usersToProjects.projectId, params.projectId))
+				and(
+					eq(usersToProjects.userId, updateUserId),
+					eq(usersToProjects.projectId, params.projectId)
+				)
 			);
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	deleteProject: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
@@ -136,12 +148,13 @@ export const actions: Actions = {
 		redirect(302, '/projects');
 	},
 	deleteWebhook: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			),
 			with: {
@@ -159,12 +172,13 @@ export const actions: Actions = {
 		redirect(302, `/projects/${params.projectId}/settings`);
 	},
 	addWebhook: async ({ request, params, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const admin = await db.query.usersToProjects.findFirst({
 			where: and(
 				eq(usersToProjects.projectId, params.projectId),
-				eq(usersToProjects.userId, session.user.userId),
+				eq(usersToProjects.userId, userId),
 				eq(usersToProjects.role, 'admin')
 			)
 		});
@@ -173,7 +187,7 @@ export const actions: Actions = {
 		const url = formData.get('url')?.toString() ?? '';
 		await db.insert(webhook).values({
 			projectId: params.projectId,
-			service,
+			service: service as 'discord',
 			url
 		});
 		redirect(302, `/projects/${params.projectId}/settings`);
@@ -181,11 +195,12 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const session = await locals.auth.validate();
+	const userId = locals.user?.id;
+	if (!userId) error(400);
 	const membership = await db.query.usersToProjects.findFirst({
 		where: and(
 			eq(usersToProjects.projectId, params.projectId),
-			eq(usersToProjects.userId, session.user.userId),
+			eq(usersToProjects.userId, userId),
 			eq(usersToProjects.role, 'admin')
 		),
 		with: {

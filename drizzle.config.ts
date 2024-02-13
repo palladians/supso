@@ -4,10 +4,9 @@ import { defineConfig } from 'drizzle-kit';
 export default defineConfig({
 	schema: './src/lib/db/schema.ts',
 	out: './drizzle',
-	driver: (process.env.SECRET_DB_DRIVER ?? '') as 'turso',
+	driver: 'libsql',
 	dbCredentials: {
-		url: process.env.SECRET_SQLITE_URL ?? '',
-		authToken: process.env.SECRET_SQLITE_KEY ?? ''
+		url: process.env.SECRET_SQLITE_URL ?? ''
 	},
 	verbose: true,
 	strict: true

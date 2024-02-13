@@ -1,11 +1,12 @@
 import { db } from '$lib/db';
 import { project, usersToProjects } from '$lib/db/schema';
-import { redirect } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { Actions } from '../../../$types';
 
 export const actions: Actions = {
 	default: async ({ request, locals }) => {
-		const session = await locals.auth.validate();
+		const userId = locals.user?.id;
+		if (!userId) error(400);
 		const formData = await request.formData();
 		const name = formData.get('name')?.toString() ?? '';
 		const createdProject = await db.transaction(async (tx) => {
@@ -13,11 +14,11 @@ export const actions: Actions = {
 				.insert(project)
 				.values({
 					name,
-					ownerId: session.user.userId
+					ownerId: userId
 				})
 				.returning();
 			await tx.insert(usersToProjects).values({
-				userId: session.user.userId,
+				userId: userId,
 				projectId: createdProject.id,
 				role: 'admin'
 			});

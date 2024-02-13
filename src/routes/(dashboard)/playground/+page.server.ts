@@ -5,9 +5,8 @@ import { eq } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const session = await locals.auth.validate();
 	const user = await db.query.user.findFirst({
-		where: eq(userScheme.id, session.user.userId),
+		where: eq(userScheme.id, locals.user?.id ?? ''),
 		with: {
 			accessTokens: {
 				where: eq(accessToken.internal, 'true')

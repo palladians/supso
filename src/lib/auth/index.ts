@@ -1,17 +1,13 @@
-import { lucia } from 'lucia';
-import { libsql } from '@lucia-auth/adapter-sqlite';
-import { client } from '$lib/db';
+import { Lucia } from 'lucia';
 import { dev } from '$app/environment';
-import { sveltekit } from 'lucia/middleware';
+import { luciaAdapter } from '$lib/db';
 
-export const auth = lucia({
-	adapter: libsql(client, {
-		user: 'user',
-		key: 'user_key',
-		session: 'user_session'
-	}),
-	env: dev ? 'DEV' : 'PROD',
-	middleware: sveltekit(),
+export const lucia = new Lucia(luciaAdapter, {
+	sessionCookie: {
+		attributes: {
+			secure: !dev
+		}
+	},
 	getUserAttributes: (data) => {
 		return {
 			email: data.email,
@@ -19,4 +15,9 @@ export const auth = lucia({
 		};
 	}
 });
-export type Auth = typeof auth;
+
+declare module 'lucia' {
+	interface Register {
+		Lucia: typeof lucia;
+	}
+}

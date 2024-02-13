@@ -7,7 +7,6 @@ import { error, redirect } from '@sveltejs/kit';
 export const actions: Actions = {
 	updateEventsOrder: async ({ request, locals, params }) => {
 		const { boardId } = params;
-		const session = await locals.auth.validate();
 		const board = await db.query.board.findFirst({
 			where: eq(boardScheme.id, boardId),
 			with: {
@@ -20,7 +19,7 @@ export const actions: Actions = {
 		});
 		if (!board) return error(404);
 		const permitted = board.project.usersToProjects.some(
-			(userToProject) => userToProject.userId === session.user.userId
+			(userToProject) => userToProject.userId === locals.user?.id
 		);
 		if (!permitted) return error(400);
 		const formData = await request.formData();
@@ -36,7 +35,6 @@ export const actions: Actions = {
 	},
 	updateEventTag: async ({ request, locals, params }) => {
 		const { boardId } = params;
-		const session = await locals.auth.validate();
 		const board = await db.query.board.findFirst({
 			where: eq(boardScheme.id, boardId),
 			with: {
@@ -50,7 +48,7 @@ export const actions: Actions = {
 		});
 		if (!board) return error(404);
 		const permitted = board.project.usersToProjects.some(
-			(userToProject) => userToProject.userId === session.user.userId
+			(userToProject) => userToProject.userId === locals.user?.id
 		);
 		if (!permitted) return error(400);
 		const formData = await request.formData();
@@ -74,7 +72,6 @@ export const actions: Actions = {
 	},
 	deleteEvent: async ({ request, locals, params }) => {
 		const { boardId } = params;
-		const session = await locals.auth.validate();
 		const formData = await request.formData();
 		const id = formData.get('id')?.toString();
 		const board = await db.query.board.findFirst({
@@ -92,7 +89,7 @@ export const actions: Actions = {
 		});
 		if (!board) return error(404);
 		const permitted = board.project.usersToProjects.some(
-			(userToProject) => userToProject.userId === session.user.userId
+			(userToProject) => userToProject.userId === locals.user?.id
 		);
 		if (!permitted) return error(400);
 		await db.delete(eventScheme).where(eq(eventScheme.id, board.project.events[0].id));
@@ -101,14 +98,13 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {
-	const session = await locals.auth.validate();
 	const board = await db.query.board.findFirst({
 		where: eq(boardScheme.id, params.boardId),
 		with: { project: { with: { usersToProjects: true, events: true } } }
 	});
 	if (!board) return error(400);
 	const viewAllowed = board.project?.usersToProjects.some(
-		(userToProject) => userToProject.userId === session.user.userId
+		(userToProject) => userToProject.userId === locals.user?.id
 	);
 	if (!viewAllowed) return error(404);
 	return { board, project: board.project };

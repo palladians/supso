@@ -1,11 +1,33 @@
-import { auth } from '$lib/auth';
+import { lucia } from '$lib/auth';
 import { getUserByBearer } from '$lib/auth/utils';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.auth = auth.handleRequest(event);
-	const { headers } = event.request;
-	const authorization = headers.get('authorization');
+	const sessionId = event.cookies.get(lucia.sessionCookieName);
+	if (!sessionId) {
+		event.locals.user = null;
+		event.locals.session = null;
+		return resolve(event);
+	}
+
+	const { session, user } = await lucia.validateSession(sessionId);
+	if (session && session.fresh) {
+		const sessionCookie = lucia.createSessionCookie(session.id);
+		event.cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
+		});
+	}
+	if (!session) {
+		const sessionCookie = lucia.createBlankSessionCookie();
+		event.cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
+		});
+	}
+	event.locals.user = user;
+	event.locals.session = session;
+	const authorization = event.request.headers.get('authorization');
 	const bearer = authorization?.split(' ')[1] ?? '';
 	const apiUser = await getUserByBearer(bearer);
 	event.locals.apiUser = apiUser;
