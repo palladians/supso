@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { migrate } from 'drizzle-orm/libsql/migrator';
-import { db } from './src/lib/db';
+import { db } from '../src/lib/db';
 
 const main = async () => {
 	try {
