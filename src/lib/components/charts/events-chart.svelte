@@ -1,15 +1,20 @@
 <script lang="ts">
 	import '@carbon/charts-svelte/styles.css';
-	import { BarChartSimple, ChartTheme, ScaleTypes } from '@carbon/charts-svelte';
+	import {
+		BarChartSimple,
+		ChartTheme,
+		ScaleTypes,
+		type ChartTabularData
+	} from '@carbon/charts-svelte';
 
-	export let data;
+	export let data: ChartTabularData;
 </script>
 
 <BarChartSimple
 	{data}
 	options={{
 		theme: ChartTheme.G100,
-		height: '400px',
+		height: '368px',
 		grid: {
 			x: {
 				enabled: false
@@ -33,6 +38,9 @@
 				Qty: '#14b8a6',
 				Misc: '#14b8a6'
 			}
+		},
+		toolbar: {
+			enabled: false
 		}
 	}}
 />

@@ -94,6 +94,8 @@ export const event = sqliteTable('event', {
 	content: text('content'),
 	emoji: text('emoji'),
 	notify: numeric('notify').default('false'),
+	resolved: numeric('resolved').default('false'),
+	customName: text('customName'),
 	tags: text('tags', { mode: 'json' }),
 	context: text('context', { mode: 'json' }),
 	priority: text('priority', { enum: ['low', 'normal', 'high'] })
@@ -169,11 +171,28 @@ export const webhook = sqliteTable('webhook', {
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
 
+export const comment = sqliteTable('comment', {
+	id: text('id')
+		.primaryKey()
+		.notNull()
+		.$defaultFn(() => crypto.randomUUID()),
+	eventId: text('event_id')
+		.notNull()
+		.references(() => event.id, { onDelete: 'cascade' }),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id, { onDelete: 'cascade' }),
+	content: text('content').notNull(),
+	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
+	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
+});
+
 export const usersRelations = relations(user, ({ many }) => ({
 	usersToProjects: many(usersToProjects),
 	accessTokens: many(accessToken),
 	projectInvitations: many(projectInvitation),
-	assignedEvents: many(event)
+	assignedEvents: many(event),
+	comments: many(comment)
 }));
 
 export const projectsRelations = relations(project, ({ many }) => ({
@@ -221,7 +240,7 @@ export const usersToProjectsRelations = relations(usersToProjects, ({ one }) => 
 	})
 }));
 
-export const eventRelations = relations(event, ({ one }) => ({
+export const eventRelations = relations(event, ({ one, many }) => ({
 	project: one(project, {
 		fields: [event.projectId],
 		references: [project.id]
@@ -229,7 +248,8 @@ export const eventRelations = relations(event, ({ one }) => ({
 	assignee: one(user, {
 		fields: [event.assigneeId],
 		references: [user.id]
-	})
+	}),
+	comments: many(comment)
 }));
 
 export const boardRelations = relations(board, ({ one }) => ({
@@ -243,6 +263,17 @@ export const featureFlagRelations = relations(featureFlag, ({ one }) => ({
 	project: one(project, {
 		fields: [featureFlag.projectId],
 		references: [project.id]
+	})
+}));
+
+export const commentRelations = relations(comment, ({ one }) => ({
+	event: one(event, {
+		fields: [comment.eventId],
+		references: [event.id]
+	}),
+	user: one(user, {
+		fields: [comment.userId],
+		references: [user.id]
 	})
 }));
 

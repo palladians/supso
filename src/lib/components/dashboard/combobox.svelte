@@ -42,7 +42,10 @@
 	</Popover.Trigger>
 	<Popover.Content class="w-[200px] p-0">
 		<Command.Root>
-			<Command.Input {placeholder} />
+			<Command.Input
+				{placeholder}
+				class={cn('text-muted-foreground', $value && 'text-foreground')}
+			/>
 			<Command.Empty>No option found.</Command.Empty>
 			<Command.Group>
 				{#each options as option}

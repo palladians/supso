@@ -1,4 +1,4 @@
-![Logo](https://supso.co/logo.svg)
+![Logo](https://supso.co/logo-dark.png)
 
 # Supso
 

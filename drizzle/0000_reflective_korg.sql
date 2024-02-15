@@ -20,6 +20,17 @@ CREATE TABLE `board` (
 	FOREIGN KEY (`project_id`) REFERENCES `project`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `comment` (
+	`id` text PRIMARY KEY NOT NULL,
+	`event_id` text NOT NULL,
+	`user_id` text NOT NULL,
+	`content` text NOT NULL,
+	`created_at` text,
+	`updated_at` text,
+	FOREIGN KEY (`event_id`) REFERENCES `event`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
 CREATE TABLE `event` (
 	`id` text PRIMARY KEY NOT NULL,
 	`project_id` text NOT NULL,
@@ -28,6 +39,8 @@ CREATE TABLE `event` (
 	`content` text,
 	`emoji` text,
 	`notify` numeric DEFAULT 'false',
+	`resolved` numeric DEFAULT 'false',
+	`customName` text,
 	`tags` text,
 	`context` text,
 	`priority` text DEFAULT 'normal' NOT NULL,

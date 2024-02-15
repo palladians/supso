@@ -29,7 +29,7 @@
 				<span>Create Flag</span>
 			</Button>
 		</PageNavbar>
-		<Card.Root class="flex-1 p-6">
+		<Card.Root class="flex-1">
 			{#if data.featureFlags.length === 0}
 				<EmptyState
 					title="Create a feature flag"
@@ -40,7 +40,7 @@
 			{:else}
 				<Accordion.Root>
 					{#each data.featureFlags as featureFlag}
-						<Accordion.Item value={featureFlag.id}>
+						<Accordion.Item value={featureFlag.id} class="px-4">
 							<Accordion.Trigger>
 								<div class="flex gap-2">
 									<Badge variant={featureFlag.enabled === 'true' ? 'default' : 'secondary'}

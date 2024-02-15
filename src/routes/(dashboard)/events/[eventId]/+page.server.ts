@@ -33,6 +33,14 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const content = formData.get('content')?.toString() ?? '';
 		await db.update(eventScheme).set({ content }).where(eq(eventScheme.id, eventId));
+	},
+	setResolved: async ({ params }) => {
+		const { eventId } = params;
+		await db.update(eventScheme).set({ resolved: 'true' }).where(eq(eventScheme.id, eventId));
+	},
+	undoResolved: async ({ params }) => {
+		const { eventId } = params;
+		await db.update(eventScheme).set({ resolved: 'false' }).where(eq(eventScheme.id, eventId));
 	}
 };
 

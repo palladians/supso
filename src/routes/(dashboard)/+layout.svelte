@@ -4,10 +4,14 @@
 	import { subscribeToEvents } from '$lib/realtime/events';
 	import { onMount } from 'svelte';
 	import { events } from '$lib/stores/events';
+	import { hosted } from '$lib/stores/hosted';
+	import { env as envPublic } from '$env/dynamic/public';
 
 	export let data;
 
 	onMount(async () => {
+		hosted.set(envPublic.PUBLIC_SELF_HOSTED === 'true');
+		console.log(envPublic.PUBLIC_SELF_HOSTED);
 		const { cancel } = await subscribeToEvents({
 			accessToken: data.user.accessTokens[0].id,
 			callback: events.set

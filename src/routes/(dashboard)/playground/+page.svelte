@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { toast } from 'svelte-sonner';
 	import * as Card from '$lib/components/ui/card';
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Label } from '$lib/components/ui/label';
@@ -10,7 +11,6 @@
 	import { codeToHtml } from 'shiki';
 	import dedent from 'dedent';
 	import { derived, writable } from 'svelte/store';
-	import { env as envPublic } from '$env/dynamic/public';
 	import { CopyIcon, InfoIcon, ArrowUpRightIcon } from 'lucide-svelte';
 
 	export let data;
@@ -50,7 +50,7 @@
 	);
 
 	export const execute = async () => {
-		await fetch(envPublic.PUBLIC_APP_URL + '/api/log', {
+		await fetch(data.appUrl + '/api/log', {
 			method: 'POST',
 			body: JSON.stringify({
 				projectId: $projectId,
@@ -63,6 +63,12 @@
 				authorization: 'Bearer ' + data.accessToken.id
 			}
 		});
+	};
+
+	export const copyCode = () => {
+		const code = getFetchTemplate();
+		navigator.clipboard.writeText(code);
+		toast('Code was copied to the clipboard.');
 	};
 </script>
 
@@ -144,7 +150,7 @@
 						>.</Alert.Description
 					>
 				</Alert.Root>
-				<Button variant="secondary" class="gap-2">
+				<Button variant="secondary" class="gap-2" on:click={copyCode}>
 					<CopyIcon size={16} />
 					<span>Copy Code</span>
 				</Button>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import EventsChart from '$lib/components/charts/events-chart.svelte';
-	import EventsTableShort from '$lib/components/dashboard/events-table-short.svelte';
+	import EventsTable from '$lib/components/dashboard/events-table.svelte';
 	import PageTitle from '$lib/components/dashboard/page-navbar.svelte';
 	import { page } from '$app/stores';
 	import * as Card from '$lib/components/ui/card';
@@ -43,9 +43,9 @@
 			{/if}
 		</div>
 	</PageTitle>
-	<div class="grid grid-cols-2 gap-4">
+	<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
 		<Card.Root>
-			<Card.Header>
+			<Card.Header class="py-4">
 				<div class="flex items-center justify-between">
 					<Card.Title>Events</Card.Title>
 					<Tabs.Root
@@ -69,7 +69,7 @@
 			</Card.Content>
 		</Card.Root>
 		<Card.Root>
-			<Card.Header>
+			<Card.Header class="py-4">
 				<div class="flex items-center justify-between">
 					<Card.Title>Latest Events</Card.Title>
 					<Button href={`/projects/${$page.params.projectId}/events`} size="sm" variant="secondary"
@@ -77,9 +77,7 @@
 					>
 				</div>
 			</Card.Header>
-			<Card.Content>
-				<EventsTableShort lastEvents={lastFiveEvents} />
-			</Card.Content>
+			<EventsTable events={lastFiveEvents} hideActions />
 		</Card.Root>
 	</div>
 </div>

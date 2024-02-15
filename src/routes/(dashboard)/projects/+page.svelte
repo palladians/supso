@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Head from '$lib/components/head.svelte';
 	import * as Card from '$lib/components/ui/card';
-	import EventsTableShort from '$lib/components/dashboard/events-table-short.svelte';
+	import EventsTable from '$lib/components/dashboard/events-table.svelte';
 	import { onMount } from 'svelte';
 	import { events } from '$lib/stores/events';
 	import { take } from 'rambda';
@@ -23,8 +23,11 @@
 <Head title="Projects" />
 
 <div class="container flex flex-1 flex-col">
-	<h2 class="py-4 text-lg font-semibold">Latest Events (All projects)</h2>
-	<Card.Root class="flex w-full flex-col gap-8 p-6">
-		<EventsTableShort lastEvents={lastTenEvents} />
+	<h2 class="py-4 text-lg font-semibold">Inbox</h2>
+	<Card.Root class="flex w-full flex-col gap-8">
+		<Card.Header class="pb-0">
+			<Card.Title>Latest Events (All projects)</Card.Title>
+		</Card.Header>
+		<EventsTable events={lastTenEvents} />
 	</Card.Root>
 </div>

@@ -4,13 +4,13 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { PlusIcon } from 'lucide-svelte';
-	import { KanbanSquareIcon } from 'lucide-svelte';
+	import { ChevronRightIcon, KanbanSquareIcon } from 'lucide-svelte';
 	import { page } from '$app/stores';
 
 	export let data;
 </script>
 
-<div class="container flex flex-col">
+<div class="container flex flex-1 flex-col">
 	<PageNavbar title="Boards" length={data.boards.length}>
 		<Button
 			href={`/projects/${$page.params.projectId}/boards/create`}
@@ -22,26 +22,25 @@
 			Create Board
 		</Button>
 	</PageNavbar>
-	<div class="grid grid-cols-4 gap-8">
+	<Card.Root class="flex flex-1 flex-col overflow-hidden">
+		{#if data.boards.length === 0}
+			<div class="flex w-full flex-1 flex-col items-center justify-center p-4">
+				<h2>No boards</h2>
+			</div>
+		{/if}
 		{#each data.boards as board}
-			<a href={`/boards/${board.id}`}>
-				<Card.Root>
-					<Card.Header class="items-start gap-2">
-						<Card.Title>{board.name}</Card.Title>
-						<Badge variant="secondary">{board.tag}</Badge>
-					</Card.Header>
-				</Card.Root>
-			</a>
+			<Button
+				variant="ghost"
+				href={`/boards/${board.id}`}
+				class="items-center justify-between rounded-none border-b p-8"
+			>
+				<div class="flex items-center gap-2">
+					<KanbanSquareIcon size={20} />
+					<span>{board.name}</span>
+					<Badge variant="secondary">{board.tag}</Badge>
+				</div>
+				<ChevronRightIcon size={16} />
+			</Button>
 		{/each}
-		<a href={`/projects/${$page.params.projectId}/boards/create`} class="flex flex-1">
-			<Card.Root class="flex-1">
-				<Card.Header class="flex flex-1 justify-center">
-					<div class="mt-2 flex flex-1 items-center gap-2 pt-1">
-						<KanbanSquareIcon />
-						<Card.Title>Create</Card.Title>
-					</div>
-				</Card.Header>
-			</Card.Root>
-		</a>
-	</div>
+	</Card.Root>
 </div>

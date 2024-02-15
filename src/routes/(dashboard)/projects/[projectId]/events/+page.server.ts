@@ -1,5 +1,5 @@
 import { db } from '$lib/db';
-import { and, desc, eq, lt } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, lt } from 'drizzle-orm';
 import type { PageServerLoad, RouteParams } from './$types';
 import { event as eventScheme, project } from '$lib/db/schema';
 import { error } from '@sveltejs/kit';
@@ -10,15 +10,19 @@ const PAGE_SIZE = 10;
 const fetchEvents = async ({
 	params,
 	userId,
-	lastCursor,
+	fromDate,
+	toDate,
 	channel,
-	event
+	event,
+	order
 }: {
 	params: RouteParams;
 	userId: string;
-	lastCursor: string | null;
+	fromDate: string | null;
+	toDate: string | null;
 	channel: string | null;
 	event: string | null;
+	order: string | null;
 }) => {
 	const currentProject = await db.query.project.findFirst({
 		where: eq(project.id, params.projectId),
@@ -32,11 +36,12 @@ const fetchEvents = async ({
 	return db.query.event.findMany({
 		where: and(
 			eq(eventScheme.projectId, currentProject.id),
-			lastCursor ? lt(eventScheme.createdAt, lastCursor) : undefined,
+			fromDate ? gt(eventScheme.createdAt, fromDate) : undefined,
+			toDate ? lt(eventScheme.createdAt, toDate) : undefined,
 			channel ? eq(eventScheme.channel, channel) : undefined,
 			event ? eq(eventScheme.event, event) : undefined
 		),
-		orderBy: desc(eventScheme.createdAt),
+		orderBy: order === 'asc' ? asc(eventScheme.createdAt) : desc(eventScheme.createdAt),
 		limit: PAGE_SIZE
 	});
 };
@@ -45,10 +50,12 @@ export const load: PageServerLoad = async ({ locals, params, url, parent }) => {
 	const userId = locals.user?.id;
 	if (!userId) error(400);
 	const parentData = await parent();
-	const lastCursor = url.searchParams.get('last_cursor');
+	const fromDate = url.searchParams.get('from');
+	const toDate = url.searchParams.get('to');
 	const channel = url.searchParams.get('channel');
 	const event = url.searchParams.get('event');
-	const events = await fetchEvents({ userId, params, lastCursor, channel, event });
+	const order = url.searchParams.get('order');
+	const events = await fetchEvents({ userId, params, fromDate, toDate, channel, event, order });
 	const channels = uniq(events.map((event) => event.channel));
 	const eventNames = uniq(events.map((event) => event.event));
 	const pages = Math.floor(events.length / PAGE_SIZE);

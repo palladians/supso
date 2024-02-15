@@ -1,12 +1,12 @@
 <script lang="ts">
 	import PageNavbar from '$lib/components/dashboard/page-navbar.svelte';
+	import EventsTable from '$lib/components/dashboard/events-table.svelte';
+	import EventsDatePicker from '$lib/components/dashboard/events-date-picker.svelte';
 	import * as Table from '$lib/components/ui/table';
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import { formatDate } from '$lib/format/date';
 	import Combobox from '$lib/components/dashboard/combobox.svelte';
-	import { XIcon, CheckIcon } from 'lucide-svelte';
+	import { ArrowUp10Icon, ArrowDown01Icon } from 'lucide-svelte';
 	import { writable } from 'svelte/store';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
@@ -22,6 +22,13 @@
 
 	export const channel = writable<string | null>($page.url.searchParams.get('channel'));
 	export const event = writable<string | null>($page.url.searchParams.get('event'));
+	export const eventsFrom = writable<string>($page.url.searchParams.get('from') ?? '');
+	export const eventsTo = writable<string>($page.url.searchParams.get('to') ?? '');
+	export const order = writable<string>($page.url.searchParams.get('order') ?? '');
+
+	const toggleOrder = () => {
+		$order === 'asc' ? order.set('') : order.set('asc');
+	};
 
 	onMount(() => {
 		const unsubChannel = channel.subscribe((newChannel) => {
@@ -29,70 +36,61 @@
 			$page.url.searchParams.set('channel', newChannel ?? '');
 			goto($page.url, { invalidateAll: true });
 		});
-
 		const unsubEvent = event.subscribe((newEvent) => {
 			if (!browser) return;
 			$page.url.searchParams.set('event', newEvent ?? '');
 			goto($page.url, { invalidateAll: true });
 		});
+		const unsubFrom = eventsFrom.subscribe((newFrom) => {
+			if (!browser) return;
+			$page.url.searchParams.set('from', newFrom ?? '');
+			goto($page.url, { invalidateAll: true });
+		});
+		const unsubTo = eventsTo.subscribe((newTo) => {
+			if (!browser) return;
+			$page.url.searchParams.set('to', newTo ?? '');
+			goto($page.url, { invalidateAll: true });
+		});
+		const unsubOrder = order.subscribe((newOrder) => {
+			if (!browser) return;
+			$page.url.searchParams.set('order', newOrder ?? '');
+			goto($page.url, { invalidateAll: true });
+		});
 		return () => {
 			unsubChannel();
 			unsubEvent();
+			unsubFrom();
+			unsubTo();
+			unsubOrder();
 		};
 	});
 </script>
 
 <div class="container flex flex-col">
 	<PageNavbar title="Events">
-		<div class="flex items-center gap-2" slot="addon">
+		<Button variant="secondary" size="icon" slot="addon" on:click={toggleOrder}>
+			{#if $order === 'asc'}
+				<ArrowDown01Icon size={16} />
+			{:else}
+				<ArrowUp10Icon size={16} />
+			{/if}
+		</Button>
+	</PageNavbar>
+	<div class="flex items-center justify-between gap-2 py-4">
+		<h2 class="font-semibold">Filters</h2>
+		<div class="flex items-center gap-2">
+			<EventsDatePicker value={eventsFrom} placeholder="Pick from" />
+			<EventsDatePicker value={eventsTo} placeholder="Pick to" />
 			<Combobox placeholder="Channel" options={channelOptions} value={channel} />
 			<Combobox placeholder="Event" options={eventOptions} value={event} />
 		</div>
-	</PageNavbar>
-	<Card.Root class="p-6">
-		<Table.Root>
-			<Table.Header>
-				<Table.Row>
-					<Table.Head>Event</Table.Head>
-					<Table.Head>Channel</Table.Head>
-					<Table.Head>Notify</Table.Head>
-					<Table.Head class="text-right">Created</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#each data.events as event}
-					<Table.Row>
-						<Table.Cell>
-							<a href={`/events/${event.id}`} class="flex items-center gap-2">
-								{#if event.emoji}
-									<Badge variant="secondary" class="text-lg">{event.emoji}</Badge>
-								{/if}
-								<span>{event.event}</span>
-							</a>
-						</Table.Cell>
-						<Table.Cell>
-							#{event.channel}
-						</Table.Cell>
-						<Table.Cell>
-							{#if event.notify}
-								<CheckIcon size={16} />
-							{:else}
-								<XIcon size={16} />
-							{/if}
-						</Table.Cell>
-						<Table.Cell>
-							<div class="flex items-center justify-end gap-2">
-								<span>{formatDate(event.createdAt ?? '')}</span>
-							</div>
-						</Table.Cell>
-					</Table.Row>
-				{/each}
-			</Table.Body>
-			{#if lastEventCreatedAt}
-				<Table.Caption class="text-left">
-					<Button href={`?last_cursor=${lastEventCreatedAt}`} variant="secondary">Next Page</Button>
-				</Table.Caption>
-			{/if}
-		</Table.Root>
+	</div>
+	<Card.Root>
+		<EventsTable events={data.events} />
+		{#if lastEventCreatedAt}
+			<Table.Caption class="text-left">
+				<Button href={`?to=${lastEventCreatedAt}`} variant="secondary">Next Page</Button>
+			</Table.Caption>
+		{/if}
 	</Card.Root>
 </div>
