@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import type { RequestHandler } from './$types';
 import { type LemonsqueezySubscription } from 'lemonsqueezy.ts';
 import { db } from '$lib/db';
@@ -19,10 +19,11 @@ type SubscriptionBody = {
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-	const hmac = crypto.createHmac('sha256', envPrivate.SECRET_LS_WEBHOOK_KEY);
 	const bodyRaw = await request.text();
+	const hmac = crypto.createHmac('sha256', envPrivate.SECRET_LS_WEBHOOK_KEY ?? '');
 	const digest = Buffer.from(hmac.update(bodyRaw).digest('hex'), 'utf8');
-	const signature = Buffer.from(request.headers.get('X-Signature') || '', 'utf8');
+	const signature = Buffer.from(request.headers.get('x-signature') as string, 'utf8');
+
 	if (!crypto.timingSafeEqual(digest, signature)) {
 		return Response.json({ error: true }, { status: 400 });
 	}
