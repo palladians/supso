@@ -11,11 +11,13 @@
 	import { events } from '$lib/stores/events';
 	import { take } from 'rambda';
 	import { goto } from '$app/navigation';
+	import { sidebar } from '$lib/stores/sidebar';
 
 	export let data;
 	export let lastFiveEvents = data.lastFiveEvents;
 
 	onMount(() => {
+		sidebar.set({ ...$sidebar, [data.project.id]: true });
 		const unsub = events.subscribe((events) => {
 			const newEvents = events
 				.filter((event) => event.projectId === $page.params.projectId)
@@ -33,6 +35,7 @@
 		<div slot="addon">
 			{#if data.role === 'admin'}
 				<Button
+					size="sm"
 					href={`/projects/${$page.params.projectId}/settings`}
 					variant="secondary"
 					class="gap-1"
@@ -77,7 +80,7 @@
 					>
 				</div>
 			</Card.Header>
-			<EventsTable events={lastFiveEvents} hideActions />
+			<EventsTable events={lastFiveEvents} hideActions hideAssignee hideNotify />
 		</Card.Root>
 	</div>
 </div>

@@ -14,7 +14,8 @@ const fetchEvents = async ({
 	toDate,
 	channel,
 	event,
-	order
+	order,
+	assigneeId
 }: {
 	params: RouteParams;
 	userId: string;
@@ -23,6 +24,7 @@ const fetchEvents = async ({
 	channel: string | null;
 	event: string | null;
 	order: string | null;
+	assigneeId: string | null;
 }) => {
 	const currentProject = await db.query.project.findFirst({
 		where: eq(project.id, params.projectId),
@@ -39,10 +41,12 @@ const fetchEvents = async ({
 			fromDate ? gt(eventScheme.createdAt, fromDate) : undefined,
 			toDate ? lt(eventScheme.createdAt, toDate) : undefined,
 			channel ? eq(eventScheme.channel, channel) : undefined,
-			event ? eq(eventScheme.event, event) : undefined
+			event ? eq(eventScheme.event, event) : undefined,
+			assigneeId ? eq(eventScheme.assigneeId, assigneeId) : undefined
 		),
 		orderBy: order === 'asc' ? asc(eventScheme.createdAt) : desc(eventScheme.createdAt),
-		limit: PAGE_SIZE
+		limit: PAGE_SIZE,
+		with: { assignee: true }
 	});
 };
 
@@ -55,7 +59,17 @@ export const load: PageServerLoad = async ({ locals, params, url, parent }) => {
 	const channel = url.searchParams.get('channel');
 	const event = url.searchParams.get('event');
 	const order = url.searchParams.get('order');
-	const events = await fetchEvents({ userId, params, fromDate, toDate, channel, event, order });
+	const assigneeId = url.searchParams.get('assignee_id');
+	const events = await fetchEvents({
+		userId,
+		params,
+		fromDate,
+		toDate,
+		channel,
+		event,
+		order,
+		assigneeId
+	});
 	const channels = uniq(events.map((event) => event.channel));
 	const eventNames = uniq(events.map((event) => event.event));
 	const pages = Math.floor(events.length / PAGE_SIZE);

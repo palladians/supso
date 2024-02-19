@@ -23,8 +23,10 @@
 	import { cn } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { browser } from '$app/environment';
 
-	export const currentPathName = writable<string>($page.url.pathname);
+	export const currentPathName = writable<string>(browser ? $page.url.pathname : '');
+	export const email = browser ? $page.data.user.email : '';
 
 	onMount(() => {
 		const unsub = page.subscribe((newPage) => {
@@ -70,6 +72,7 @@
 				<span>Inbox</span></Button
 			>
 			<Button
+				href="/tasks"
 				size="sm"
 				variant={$currentPathName === '/tasks' ? 'outline' : 'ghost'}
 				class={cn(
@@ -98,7 +101,12 @@
 						variant="link"
 						class="text-muted-foreground justify-between"
 					>
-						<span class="hidden text-xs md:flex">{project.name}</span>
+						<div class="flex gap-1">
+							<span class="hidden text-xs md:flex">{project.name}</span>
+							{#if project.subscriptionTier === 'pro'}
+								<Badge class="h-4 px-1 py-0">Pro</Badge>
+							{/if}
+						</div>
 						<ChevronDownIcon size={16} class={cn(collapsed && 'rotate-180 transition-transform')} />
 					</Button>
 				</Collapsible.Trigger>
@@ -151,8 +159,15 @@
 						<FlagIcon size={20} />
 						<span class="hidden md:flex">Feature Flags</span></Button
 					>
-					{#if !$hosted}
-						<Button variant="ghost" size="sm" class="justify-start gap-2 text-teal-500">
+					{#if !$hosted && project.subscriptionTier !== 'pro'}
+						<Button
+							href={`https://supso.lemonsqueezy.com/checkout/buy/34e724a4-b48a-4172-adcc-78517a620dd1?checkout[custom][project_id]=${project.id}&checkout[email]=${email}`}
+							variant="ghost"
+							target="_blank"
+							rel="noopener noreferrer"
+							size="sm"
+							class="justify-start gap-2 text-teal-500"
+						>
 							<StarIcon size={20} />
 							<span class="hidden md:flex">Upgrade to Pro</span>
 						</Button>
@@ -193,6 +208,11 @@
 			</DropdownMenu.Trigger>
 			<DropdownMenu.Content align="end">
 				<DropdownMenu.Item href="/profile">Profile</DropdownMenu.Item>
+				<DropdownMenu.Item
+					href="https://supso.lemonsqueezy.com/billing"
+					target="_blank"
+					rel="noopener noreferrer">Manage Subscriptions</DropdownMenu.Item
+				>
 				<DropdownMenu.Separator />
 				<form action="/api/signout" method="POST" class="flex flex-1">
 					<Button variant="ghost" size="sm" type="submit" class="flex-1 justify-start px-2"

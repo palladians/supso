@@ -51,6 +51,7 @@ export const project = sqliteTable('project', {
 	ownerId: text('user_id')
 		.notNull()
 		.references(() => user.id),
+	subscriptionTier: text('subscription_tier', { enum: ['pro'] }),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -183,6 +184,7 @@ export const comment = sqliteTable('comment', {
 		.notNull()
 		.references(() => user.id, { onDelete: 'cascade' }),
 	content: text('content').notNull(),
+	edited: numeric('edited').default('false'),
 	createdAt: text('created_at').$defaultFn(() => Number(new Date()).toString()),
 	updatedAt: text('updated_at').$defaultFn(() => Number(new Date()).toString())
 });
@@ -285,8 +287,11 @@ export const insertEventSchema = createInsertSchema(event);
 const selectEventSchema = createSelectSchema(event);
 export const insertBoardSchema = createInsertSchema(board);
 const selectBoardSchema = createSelectSchema(board);
+export const insertCommentSchema = createInsertSchema(comment);
+const selectCommentSchema = createSelectSchema(comment);
 
 export type User = z.infer<typeof insertUserSchema> & z.infer<typeof selectUserSchema>;
 export type Project = z.infer<typeof insertProjectSchema> & z.infer<typeof selectProjectSchema>;
 export type Event = z.infer<typeof insertEventSchema> & z.infer<typeof selectEventSchema>;
 export type Board = z.infer<typeof insertBoardSchema> & z.infer<typeof selectBoardSchema>;
+export type Comment = z.infer<typeof insertCommentSchema> & z.infer<typeof selectCommentSchema>;

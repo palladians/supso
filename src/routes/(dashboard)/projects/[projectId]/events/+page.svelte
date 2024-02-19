@@ -18,10 +18,15 @@
 
 	$: channelOptions = data.channels.map((channel) => ({ label: `#${channel}`, value: channel }));
 	$: eventOptions = data.eventNames.map((event) => ({ label: event, value: event }));
+	$: assigneeOptions = data.project.usersToProjects.map((membership) => ({
+		label: membership.user.username,
+		value: membership.user.id
+	}));
 	$: lastEventCreatedAt = data.events[PAGE_LENGTH - 1]?.createdAt;
 
 	export const channel = writable<string | null>($page.url.searchParams.get('channel'));
 	export const event = writable<string | null>($page.url.searchParams.get('event'));
+	export const assigneeId = writable<string | null>($page.url.searchParams.get('assignee_id'));
 	export const eventsFrom = writable<string>($page.url.searchParams.get('from') ?? '');
 	export const eventsTo = writable<string>($page.url.searchParams.get('to') ?? '');
 	export const order = writable<string>($page.url.searchParams.get('order') ?? '');
@@ -39,6 +44,11 @@
 		const unsubEvent = event.subscribe((newEvent) => {
 			if (!browser) return;
 			$page.url.searchParams.set('event', newEvent ?? '');
+			goto($page.url, { invalidateAll: true });
+		});
+		const unsubAssignee = assigneeId.subscribe((newAssignee) => {
+			if (!browser) return;
+			$page.url.searchParams.set('assignee_id', newAssignee ?? '');
 			goto($page.url, { invalidateAll: true });
 		});
 		const unsubFrom = eventsFrom.subscribe((newFrom) => {
@@ -59,6 +69,7 @@
 		return () => {
 			unsubChannel();
 			unsubEvent();
+			unsubAssignee();
 			unsubFrom();
 			unsubTo();
 			unsubOrder();
@@ -83,14 +94,15 @@
 			<EventsDatePicker value={eventsTo} placeholder="Pick to" />
 			<Combobox placeholder="Channel" options={channelOptions} value={channel} />
 			<Combobox placeholder="Event" options={eventOptions} value={event} />
+			<Combobox placeholder="Assignee" options={assigneeOptions} value={assigneeId} />
 		</div>
 	</div>
 	<Card.Root>
-		<EventsTable events={data.events} />
+		<EventsTable events={data.events} className="border-b" />
 		{#if lastEventCreatedAt}
-			<Table.Caption class="text-left">
+			<div class="m-4">
 				<Button href={`?to=${lastEventCreatedAt}`} variant="secondary">Next Page</Button>
-			</Table.Caption>
+			</div>
 		{/if}
 	</Card.Root>
 </div>

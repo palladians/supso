@@ -12,7 +12,7 @@ export const load: LayoutServerLoad = async ({ params, parent }) => {
 			eq(usersToProjects.userId, parentData.user.id)
 		),
 		with: {
-			project: true
+			project: { with: { usersToProjects: { with: { user: true } } } }
 		}
 	});
 	if (!membership) error(401);

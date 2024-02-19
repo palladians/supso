@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "6f0c003b-0d0a-48b6-b80a-f31d1d667ea1",
+  "id": "5ff1945a-c0a1-46fa-92d8-6b6b317a86c2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "access_token": {
@@ -179,6 +179,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "edited": {
+          "name": "edited",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "'false'"
         },
         "created_at": {
           "name": "created_at",
@@ -473,6 +481,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "subscription_tier": {
+          "name": "subscription_tier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {

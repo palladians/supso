@@ -6,17 +6,27 @@
 	import { Button } from '$lib/components/ui/button';
 	import { CheckIcon, XIcon, MoreVerticalIcon } from 'lucide-svelte';
 	import { formatDate } from '$lib/format/date';
+	import { cn } from '$lib/utils';
 
-	export let events: Event[];
+	type EventWithNew = Event & { new: boolean };
+	export let events: EventWithNew[];
+	export let hideAssignee: boolean = false;
 	export let hideActions: boolean = false;
+	export let hideNotify: boolean = false;
+	export let className: string = '';
 </script>
 
-<Table.Root>
+<Table.Root class={className}>
 	<Table.Header>
 		<Table.Row>
 			<Table.Head>Event</Table.Head>
 			<Table.Head>Channel</Table.Head>
-			<Table.Head>Notify</Table.Head>
+			{#if !hideNotify}
+				<Table.Head>Notify</Table.Head>
+			{/if}
+			{#if !hideAssignee}
+				<Table.Head>Assignee</Table.Head>
+			{/if}
 			<Table.Head>Created</Table.Head>
 			{#if !hideActions}
 				<Table.Head class="text-right">Actions</Table.Head>
@@ -29,7 +39,13 @@
 				<Table.Cell>
 					<a href={`/events/${event.id}`} class="flex items-center gap-2">
 						{#if event.emoji}
-							<Badge variant="secondary" class="text-lg">{event.emoji}</Badge>
+							<Badge
+								variant="secondary"
+								class={cn(
+									'text-md h-8 w-8',
+									event.new && 'bg-gradient-to-tr from-teal-500 via-green-500 to-yellow-300'
+								)}>{event.emoji}</Badge
+							>
 						{/if}
 						<span>{event.event}</span>
 					</a>
@@ -38,18 +54,23 @@
 					<Button
 						href={`/projects/${event.projectId}/events?channel=${event.channel}`}
 						variant="link"
-						class="text-foreground"
+						class="text-foreground p-0"
 					>
 						#{event.channel}
 					</Button>
 				</Table.Cell>
-				<Table.Cell>
-					{#if event.notify}
-						<CheckIcon size={16} />
-					{:else}
-						<XIcon size={16} />
-					{/if}
-				</Table.Cell>
+				{#if !hideNotify}
+					<Table.Cell>
+						{#if event.notify === 'true'}
+							<CheckIcon size={16} />
+						{:else}
+							<XIcon size={16} />
+						{/if}
+					</Table.Cell>
+				{/if}
+				{#if !hideAssignee}
+					<Table.Cell>{event.assignee ? event.assignee?.username : '-'}</Table.Cell>
+				{/if}
 				<Table.Cell>
 					{formatDate(event.createdAt ?? '')}
 				</Table.Cell>

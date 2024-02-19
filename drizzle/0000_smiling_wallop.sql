@@ -25,6 +25,7 @@ CREATE TABLE `comment` (
 	`event_id` text NOT NULL,
 	`user_id` text NOT NULL,
 	`content` text NOT NULL,
+	`edited` numeric DEFAULT 'false',
 	`created_at` text,
 	`updated_at` text,
 	FOREIGN KEY (`event_id`) REFERENCES `event`(`id`) ON UPDATE no action ON DELETE cascade,
@@ -67,6 +68,7 @@ CREATE TABLE `project` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
 	`user_id` text NOT NULL,
+	`subscription_tier` text,
 	`created_at` text,
 	`updated_at` text,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE no action

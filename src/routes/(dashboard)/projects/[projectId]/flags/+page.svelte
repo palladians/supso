@@ -20,6 +20,7 @@
 	<div class="flex flex-1 flex-col">
 		<PageNavbar title="Feature Flags" length={data.featureFlags.length}>
 			<Button
+				size="sm"
 				href={`/projects/${$page.params.projectId}/flags/create`}
 				variant="secondary"
 				class="gap-1"

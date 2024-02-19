@@ -11,7 +11,6 @@
 
 	onMount(async () => {
 		hosted.set(envPublic.PUBLIC_SELF_HOSTED === 'true');
-		console.log(envPublic.PUBLIC_SELF_HOSTED);
 		const { cancel } = await subscribeToEvents({
 			accessToken: data.user.accessTokens[0].id,
 			callback: events.set

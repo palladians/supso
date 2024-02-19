@@ -1,8 +1,8 @@
 import { db } from '$lib/db';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray } from 'drizzle-orm';
 import type { Actions, PageServerLoad } from './$types';
-import { event as eventScheme, board as boardScheme } from '$lib/db/schema';
-import { error } from '@sveltejs/kit';
+import { event as eventScheme, board as boardScheme, comment } from '$lib/db/schema';
+import { error, redirect } from '@sveltejs/kit';
 
 export const actions: Actions = {
 	setAssignee: async ({ request, params }) => {
@@ -41,13 +41,42 @@ export const actions: Actions = {
 	undoResolved: async ({ params }) => {
 		const { eventId } = params;
 		await db.update(eventScheme).set({ resolved: 'false' }).where(eq(eventScheme.id, eventId));
+	},
+	addComment: async ({ params, request, locals }) => {
+		const userId = locals.user?.id;
+		if (!userId) error(400);
+		const { eventId } = params;
+		const formData = await request.formData();
+		const content = formData.get('content')?.toString() ?? '';
+		await db.insert(comment).values({ content, eventId, userId });
+		redirect(302, `/events/${eventId}`);
+	},
+	updateComment: async ({ params, request, locals }) => {
+		const userId = locals.user?.id;
+		if (!userId) error(400);
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString() ?? '';
+		const content = formData.get('content')?.toString() ?? '';
+		await db.update(comment).set({ content, edited: 'true' }).where(eq(comment.id, id));
+		redirect(302, `/events/${params.eventId}`);
+	},
+	deleteComment: async ({ params, request, locals }) => {
+		const userId = locals.user?.id;
+		if (!userId) error(400);
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString() ?? '';
+		await db.delete(comment).where(eq(comment.id, id));
+		redirect(302, `/events/${params.eventId}`);
 	}
 };
 
 export const load: PageServerLoad = async ({ locals, params }) => {
 	const event = await db.query.event.findFirst({
 		where: eq(eventScheme.id, params.eventId),
-		with: { project: { with: { usersToProjects: { with: { user: true } } } } }
+		with: {
+			project: { with: { usersToProjects: { with: { user: true } } } },
+			comments: { with: { user: true }, orderBy: desc(comment.createdAt) }
+		}
 	});
 	if (!event) return error(400);
 	const viewAllowed = event.project?.usersToProjects.some(

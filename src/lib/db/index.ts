@@ -22,7 +22,9 @@ import {
 	usersToProjectsRelations,
 	eventRelations,
 	boardRelations,
-	featureFlagRelations
+	featureFlagRelations,
+	comment,
+	commentRelations
 } from './schema';
 import { DrizzleSQLiteAdapter } from '@lucia-auth/adapter-drizzle';
 
@@ -46,7 +48,9 @@ const schema = {
 	usersToProjectsRelations,
 	eventRelations,
 	boardRelations,
-	featureFlagRelations
+	featureFlagRelations,
+	comment,
+	commentRelations
 };
 
 export const client = createClient({
